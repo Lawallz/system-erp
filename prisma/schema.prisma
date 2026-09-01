@@ -1,0 +1,153 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  passwordHash   String          @map("password_hash")
+  isActive       Boolean         @default(true) @map("is_active")
+  roleId         String          @map("role_id")
+  role           Role            @relation(fields: [roleId], references: [id])
+  sales          Sale[]
+  stockMovements StockMovement[]
+  auditLogs      AuditLog[]
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Role {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  description     String?
+  users           User[]
+  rolePermissions RolePermission[]
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  @@map("roles")
+}
+
+model Permission {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  description     String?
+  rolePermissions RolePermission[]
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String     @map("role_id")
+  permissionId String     @map("permission_id")
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("categories")
+}
+
+model Product {
+  id             String          @id @default(uuid())
+  sku            String          @unique
+  name           String
+  description    String?
+  price          Decimal
+  costPrice      Decimal         @map("cost_price")
+  stockQuantity  Int             @default(0) @map("stock_quantity")
+  minStockAlert  Int             @default(0) @map("min_stock_alert")
+  categoryId     String          @map("category_id")
+  category       Category        @relation(fields: [categoryId], references: [id])
+  isActive       Boolean         @default(true) @map("is_active")
+  saleItems      SaleItem[]
+  stockMovements StockMovement[]
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  @@index([sku])
+  @@index([categoryId])
+  @@map("products")
+}
+
+model Sale {
+  id          String     @id @default(uuid())
+  totalAmount Decimal    @map("total_amount")
+  userId      String     @map("user_id")
+  user        User       @relation(fields: [userId], references: [id])
+  items       SaleItem[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("sales")
+}
+
+model SaleItem {
+  id        String   @id @default(uuid())
+  saleId    String   @map("sale_id")
+  sale      Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  productId String   @map("product_id")
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  unitPrice Decimal  @map("unit_price")
+  subtotal  Decimal
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sale_items")
+}
+
+model StockMovement {
+  id           String   @id @default(uuid())
+  productId    String   @map("product_id")
+  product      Product  @relation(fields: [productId], references: [id])
+  userId       String   @map("user_id")
+  user         User     @relation(fields: [userId], references: [id])
+  type         String   // Alterado de Enum para String (PURCHASE, SALE, etc.)
+  quantity     Int
+  balanceAfter Int      @map("balance_after")
+  reason       String?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([productId])
+  @@index([createdAt])
+  @@map("stock_movements")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id])
+  action     String
+  resource   String
+  resourceId String?  @map("resource_id")
+  details    String?  // Salvo como texto/string no SQLite
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
