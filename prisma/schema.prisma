@@ -119,16 +119,18 @@ model SaleItem {
 }
 
 model StockMovement {
-  id           String   @id @default(uuid())
-  productId    String   @map("product_id")
-  product      Product  @relation(fields: [productId], references: [id])
-  userId       String   @map("user_id")
-  user         User     @relation(fields: [userId], references: [id])
-  type         String   // Alterado de Enum para String (PURCHASE, SALE, etc.)
-  quantity     Int
-  balanceAfter Int      @map("balance_after")
-  reason       String?
-  createdAt    DateTime @default(now()) @map("created_at")
+  id            String   @id @default(uuid())
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id])
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  type          String   // PURCHASE, SALE, etc.
+  quantity      Int
+  previousStock Int
+  newStock      Int
+  reason        String?
+  createdAt     DateTime @default(now())
+}
 
   @@index([productId])
   @@index([createdAt])
