@@ -20,6 +20,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/stock', stockRoutes);
 app.use('/api/sales', salesRoutes);
+app.use('/api/categories', categoriesRoutes);
 
 app.use(errorHandler);
 
