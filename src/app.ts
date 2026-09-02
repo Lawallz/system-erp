@@ -5,6 +5,7 @@ import authRoutes from './modules/auth/auth.routes.js';
 import productRoutes from './modules/products/product.routes.js';
 import stockRoutes from './modules/stock/stock.routes.js';
 import salesRoutes from './modules/sales/sales.routes.js';
+import categoriesRoutes from './modules/categories/categories.routes.js';
 
 const app = express();
 
