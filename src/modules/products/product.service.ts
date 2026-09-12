@@ -1,5 +1,5 @@
 import prisma from '../../config/prisma.js';
-import { AppError } from '../../errors/AppError.js';
+import { AppError } from '../../errors/appError.js';
 
 export class ProductService {
   // --- CATEGORIAS ---
