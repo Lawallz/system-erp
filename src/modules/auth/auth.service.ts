@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../../config/prisma.js';
-import { AppError } from '../../errors/AppError.js';
-import { loginSchema } from './auth.schema.ts';
+import { AppError } from '../../errors/appError.js';
+import { loginSchema } from './auth.schema.js';
 import { z } from 'zod';
 
 type LoginInput = z.infer<typeof loginSchema>;
