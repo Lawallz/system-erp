@@ -1,10 +1,10 @@
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -14,12 +14,12 @@ model User {
   passwordHash   String          @map("password_hash")
   isActive       Boolean         @default(true) @map("is_active")
   roleId         String          @map("role_id")
-  role           Role            @relation(fields: [roleId], references: [id])
-  sales          Sale[]
-  stockMovements StockMovement[]
-  auditLogs      AuditLog[]
   createdAt      DateTime        @default(now()) @map("created_at")
   updatedAt      DateTime        @updatedAt @map("updated_at")
+  auditLogs      AuditLog[]
+  sales          Sale[]
+  stockMovements StockMovement[]
+  role           Role            @relation(fields: [roleId], references: [id])
 
   @@map("users")
 }
@@ -28,10 +28,10 @@ model Role {
   id              String           @id @default(uuid())
   name            String           @unique
   description     String?
-  users           User[]
-  rolePermissions RolePermission[]
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
+  rolePermissions RolePermission[]
+  users           User[]
 
   @@map("roles")
 }
@@ -40,9 +40,9 @@ model Permission {
   id              String           @id @default(uuid())
   name            String           @unique
   description     String?
-  rolePermissions RolePermission[]
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
+  rolePermissions RolePermission[]
 
   @@map("permissions")
 }
@@ -50,8 +50,8 @@ model Permission {
 model RolePermission {
   roleId       String     @map("role_id")
   permissionId String     @map("permission_id")
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([roleId, permissionId])
   @@map("role_permissions")
@@ -61,9 +61,9 @@ model Category {
   id          String    @id @default(uuid())
   name        String    @unique
   description String?
-  products    Product[]
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
+  products    Product[]
 
   @@map("categories")
 }
@@ -78,12 +78,12 @@ model Product {
   stockQuantity  Int             @default(0) @map("stock_quantity")
   minStockAlert  Int             @default(0) @map("min_stock_alert")
   categoryId     String          @map("category_id")
-  category       Category        @relation(fields: [categoryId], references: [id])
   isActive       Boolean         @default(true) @map("is_active")
-  saleItems      SaleItem[]
-  stockMovements StockMovement[]
   createdAt      DateTime        @default(now()) @map("created_at")
   updatedAt      DateTime        @updatedAt @map("updated_at")
+  category       Category        @relation(fields: [categoryId], references: [id])
+  saleItems      SaleItem[]
+  stockMovements StockMovement[]
 
   @@index([sku])
   @@index([categoryId])
@@ -94,10 +94,10 @@ model Sale {
   id          String     @id @default(uuid())
   totalAmount Decimal    @map("total_amount")
   userId      String     @map("user_id")
-  user        User       @relation(fields: [userId], references: [id])
-  items       SaleItem[]
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
+  items       SaleItem[]
+  user        User       @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([createdAt])
@@ -107,13 +107,13 @@ model Sale {
 model SaleItem {
   id        String   @id @default(uuid())
   saleId    String   @map("sale_id")
-  sale      Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
   productId String   @map("product_id")
-  product   Product  @relation(fields: [productId], references: [id])
   quantity  Int
   unitPrice Decimal  @map("unit_price")
   subtotal  Decimal
   createdAt DateTime @default(now()) @map("created_at")
+  product   Product  @relation(fields: [productId], references: [id])
+  sale      Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
 
   @@map("sale_items")
 }
@@ -121,15 +121,15 @@ model SaleItem {
 model StockMovement {
   id            String   @id @default(uuid())
   productId     String
-  product       Product  @relation(fields: [productId], references: [id])
   userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  type          String   // PURCHASE, SALE, etc.
+  type          String
   quantity      Int
   previousStock Int
   newStock      Int
   reason        String?
   createdAt     DateTime @default(now())
+  product       Product  @relation(fields: [productId], references: [id])
+  user          User     @relation(fields: [userId], references: [id])
 
   @@index([productId])
   @@index([createdAt])
@@ -139,13 +139,13 @@ model StockMovement {
 model AuditLog {
   id         String   @id @default(uuid())
   userId     String   @map("user_id")
-  user       User     @relation(fields: [userId], references: [id])
   action     String
   resource   String
   resourceId String?  @map("resource_id")
-  details    String?  // Salvo como texto/string no SQLite
+  details    String?
   ipAddress  String?  @map("ip_address")
   createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([action])
