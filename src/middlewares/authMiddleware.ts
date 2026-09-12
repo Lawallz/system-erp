@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { AppError } from '../errors/AppError.js';
+import { AppError } from '../errors/appError.js';
 import prisma from '../config/prisma.js';
 
 interface TokenPayload {
