@@ -1,5 +1,5 @@
 import prisma from '../../config/prisma.js';
-import { AppError } from '../../errors/AppError.js';
+import { AppError } from '../../errors/appError.js';
 
 interface StockMovementInput {
   productId: string;
@@ -47,7 +47,8 @@ export class StockService {
           userId,
           type: data.type,
           quantity: data.quantity,
-          balanceAfter: newStockQuantity,
+          previousStock: product.stockQuantity,
+          newStock: newStockQuantity,
           reason: data.reason,
         },
       });
