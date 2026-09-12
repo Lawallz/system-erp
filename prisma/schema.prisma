@@ -130,7 +130,6 @@ model StockMovement {
   newStock      Int
   reason        String?
   createdAt     DateTime @default(now())
-}
 
   @@index([productId])
   @@index([createdAt])
