@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ProductService } from './product.service.ts';
-import { createCategorySchema, createProductSchema } from './product.schema.ts';
+import { ProductService } from './product.service.js';
+import { createCategorySchema, createProductSchema } from './product.schema.js';
 
 export class ProductController {
   async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
