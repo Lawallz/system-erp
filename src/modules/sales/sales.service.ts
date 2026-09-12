@@ -1,5 +1,5 @@
 import prisma from '../../config/prisma.js';
-import { AppError } from '../../errors/AppError.js';
+import { AppError } from '../../errors/appError.js';
 import { CreateSaleInput } from './sales.schema.js';
 
 export class SalesService {
@@ -80,7 +80,8 @@ export class SalesService {
             userId,
             type: 'SALE',
             quantity: saleItemsData.find(i => i.productId === update.productId)?.quantity || 0,
-            balanceAfter: update.newStock,
+            previousStock: update.previousStock,
+            newStock: update.newStock,
             reason: `Venda #${sale.id}`,
           },
         });
