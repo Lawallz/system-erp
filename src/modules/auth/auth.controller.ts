@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthService } from './auth.service.ts';
-import { loginSchema } from './auth.schema.ts';
+import { AuthService } from './auth.service.js';
+import { loginSchema } from './auth.schema.js';
 
 export class AuthController {
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
