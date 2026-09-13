@@ -15,10 +15,14 @@ import roleRoutes from './modules/roles/role.routes.js';
 import reportRoutes from './modules/reports/report.routes.js';
 import dashboardRoutes from './modules/dashboard/dashboard.routes.js';
 
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger.js';
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/health', (req, res) => {
   res.status(200).json({
