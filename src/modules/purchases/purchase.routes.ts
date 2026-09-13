@@ -34,6 +34,22 @@ const purchaseController = new PurchaseController();
  *       - Purchases
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - supplierId
+ *             properties:
+ *               supplierId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: ID do fornecedor da compra
+ *                 example: 3da575ee-ecae-40be-b5f7-1f74b9e576bc
+ *           example:
+ *             supplierId: 3da575ee-ecae-40be-b5f7-1f74b9e576bc
  *     responses:
  *       201:
  *         description: Compra registrada com sucesso
@@ -68,6 +84,38 @@ purchaseRoutes.post(
  *         schema:
  *           type: string
  *         description: ID da compra
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *               - quantity
+ *               - unitCost
+ *             properties:
+ *               productId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: ID do produto
+ *                 example: 85244462-52b1-40be-b32e-6eacd758b52a
+ *               quantity:
+ *                 type: integer
+ *                 minimum: 1
+ *                 description: Quantidade comprada
+ *                 example: 10
+ *               unitCost:
+ *                 type: number
+ *                 format: double
+ *                 minimum: 0
+ *                 exclusiveMinimum: true
+ *                 description: Custo unitário do produto
+ *                 example: 50
+ *           example:
+ *             productId: 85244462-52b1-40be-b32e-6eacd758b52a
+ *             quantity: 10
+ *             unitCost: 50
  *     responses:
  *       201:
  *         description: Item adicionado à compra com sucesso
@@ -78,7 +126,7 @@ purchaseRoutes.post(
  *       403:
  *         description: Usuário sem permissão
  *       404:
- *         description: Compra não encontrada
+ *         description: Compra ou produto não encontrado
  */
 purchaseRoutes.post(
   '/:id/items',
@@ -165,7 +213,7 @@ purchaseRoutes.get(
  *       200:
  *         description: Compra recebida com sucesso
  *       400:
- *         description: Não foi possível receber a compra
+ *         description: Compra não pode ser recebida
  *       401:
  *         description: Não autenticado
  *       403:
