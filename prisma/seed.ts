@@ -8,12 +8,29 @@ async function main() {
 
   // 1. Criar Permissões Padrão
   const permissionsList = [
-    'products:create', 'products:read', 'products:update', 'products:delete',
-    'sales:create', 'sales:read', 'sales:cancel',
-    'stock:read', 'stock:create',
-    'reports:read',
-    'users:create', 'users:read', 'users:update', 'users:delete'
-  ];
+  'products:create',
+  'products:read',
+  'products:update',
+  'products:delete',
+
+  'sales:create',
+  'sales:read',
+  'sales:cancel',
+
+  'stock:read',
+  'stock:create',
+
+  'reports:read',
+
+  'users:create',
+  'users:read',
+  'users:update',
+  'users:delete',
+
+  'suppliers:create',
+  'suppliers:read',
+  'suppliers:update'
+];
 
   const createdPermissions = [];
   for (const permName of permissionsList) {
