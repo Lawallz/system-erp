@@ -19,6 +19,32 @@ const roleRoutes = Router();
 
 const roleController = new RoleController();
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Roles
+ *     description: Gerenciamento de perfis e permissões
+ */
+
+/**
+ * @swagger
+ * /api/roles:
+ *   post:
+ *     summary: Cria um novo perfil
+ *     tags:
+ *       - Roles
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       201:
+ *         description: Perfil criado com sucesso
+ *       400:
+ *         description: Dados inválidos
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Usuário sem permissão
+ */
 roleRoutes.post(
   '/',
   ensureAuthenticated,
@@ -27,6 +53,23 @@ roleRoutes.post(
   roleController.create.bind(roleController)
 );
 
+/**
+ * @swagger
+ * /api/roles:
+ *   get:
+ *     summary: Lista os perfis
+ *     tags:
+ *       - Roles
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de perfis retornada com sucesso
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Usuário sem permissão
+ */
 roleRoutes.get(
   '/',
   ensureAuthenticated,
@@ -34,6 +77,23 @@ roleRoutes.get(
   roleController.list.bind(roleController)
 );
 
+/**
+ * @swagger
+ * /api/roles/permissions:
+ *   get:
+ *     summary: Lista as permissões disponíveis
+ *     tags:
+ *       - Roles
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de permissões retornada com sucesso
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Usuário sem permissão
+ */
 roleRoutes.get(
   '/permissions',
   ensureAuthenticated,
@@ -41,6 +101,32 @@ roleRoutes.get(
   roleController.listPermissions.bind(roleController)
 );
 
+/**
+ * @swagger
+ * /api/roles/{id}:
+ *   get:
+ *     summary: Busca um perfil pelo ID
+ *     tags:
+ *       - Roles
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do perfil
+ *     responses:
+ *       200:
+ *         description: Perfil encontrado com sucesso
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Usuário sem permissão
+ *       404:
+ *         description: Perfil não encontrado
+ */
 roleRoutes.get(
   '/:id',
   ensureAuthenticated,
@@ -48,6 +134,34 @@ roleRoutes.get(
   roleController.findById.bind(roleController)
 );
 
+/**
+ * @swagger
+ * /api/roles/{id}:
+ *   put:
+ *     summary: Atualiza um perfil
+ *     tags:
+ *       - Roles
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do perfil
+ *     responses:
+ *       200:
+ *         description: Perfil atualizado com sucesso
+ *       400:
+ *         description: Dados inválidos
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Usuário sem permissão
+ *       404:
+ *         description: Perfil não encontrado
+ */
 roleRoutes.put(
   '/:id',
   ensureAuthenticated,
@@ -56,6 +170,34 @@ roleRoutes.put(
   roleController.update.bind(roleController)
 );
 
+/**
+ * @swagger
+ * /api/roles/{id}/permissions:
+ *   put:
+ *     summary: Atualiza as permissões de um perfil
+ *     tags:
+ *       - Roles
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do perfil
+ *     responses:
+ *       200:
+ *         description: Permissões atualizadas com sucesso
+ *       400:
+ *         description: Dados inválidos
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Usuário sem permissão
+ *       404:
+ *         description: Perfil não encontrado
+ */
 roleRoutes.put(
   '/:id/permissions',
   ensureAuthenticated,
