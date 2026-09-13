@@ -30,6 +30,27 @@ router.use(ensureAuthenticated);
  *       - Categories
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 2
+ *                 description: Nome da categoria
+ *                 example: Informática
+ *               description:
+ *                 type: string
+ *                 description: Descrição opcional da categoria
+ *                 example: Produtos e acessórios de informática
+ *           example:
+ *             name: Informática
+ *             description: Produtos e acessórios de informática
  *     responses:
  *       201:
  *         description: Categoria criada com sucesso
@@ -109,6 +130,25 @@ router.get(
  *         schema:
  *           type: string
  *         description: ID da categoria
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 2
+ *                 description: Novo nome da categoria
+ *                 example: Informática e Tecnologia
+ *               description:
+ *                 type: string
+ *                 description: Nova descrição da categoria
+ *                 example: Produtos, periféricos e acessórios de tecnologia
+ *           example:
+ *             name: Informática e Tecnologia
+ *             description: Produtos, periféricos e acessórios de tecnologia
  *     responses:
  *       200:
  *         description: Categoria atualizada com sucesso
