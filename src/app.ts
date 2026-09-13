@@ -13,6 +13,7 @@ import purchaseRoutes from './modules/purchases/purchase.routes.js';
 import userRoutes from './modules/users/user.routes.js';
 import roleRoutes from './modules/roles/role.routes.js';
 import reportRoutes from './modules/reports/report.routes.js';
+import dashboardRoutes from './modules/dashboard/dashboard.routes.js';
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/purchases', purchaseRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.use(errorHandler);
 
