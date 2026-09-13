@@ -29,18 +29,28 @@ async function main() {
 
   'suppliers:create',
   'suppliers:read',
-  'suppliers:update'
+  'suppliers:update',
+
+  'purchases:create',
+  'purchases:read',
+  'purchases:receive',
 ];
 
   const createdPermissions = [];
   for (const permName of permissionsList) {
-    const permission = await prisma.permission.upsert({
-      where: { name: permName },
-      update: {},
-      create: { name: permName, description: `Permissão para ${permName}` },
-    });
-    createdPermissions.push(permission);
-  }
+  console.log(`Criando/verificando permissão: ${permName}`);
+
+  const permission = await prisma.permission.upsert({
+    where: { name: permName },
+    update: {},
+    create: {
+      name: permName,
+      description: `Permissão para ${permName}`,
+    },
+  });
+
+  createdPermissions.push(permission);
+}
 
   // 2. Criar Role Admin
   const adminRole = await prisma.role.upsert({
