@@ -19,6 +19,7 @@ model User {
   auditLogs      AuditLog[]
   sales          Sale[]
   stockMovements StockMovement[]
+  purchases      Purchase[]
   role           Role            @relation(fields: [roleId], references: [id])
 
   @@map("users")
@@ -84,6 +85,7 @@ model Product {
   category       Category        @relation(fields: [categoryId], references: [id])
   saleItems      SaleItem[]
   stockMovements StockMovement[]
+  purchaseItems  PurchaseItem[]
 
   @@index([sku])
   @@index([categoryId])
@@ -151,4 +153,54 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+model Supplier {
+  id        String     @id @default(uuid())
+  name      String
+  document  String?    @unique
+  email     String?
+  phone     String?
+  address   String?
+  isActive  Boolean    @default(true) @map("is_active")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  purchases Purchase[]
+
+  @@index([name])
+  @@map("suppliers")
+}
+
+model Purchase {
+  id          String         @id @default(uuid())
+  supplierId  String         @map("supplier_id")
+  userId      String         @map("user_id")
+  status      String         @default("PENDING")
+  totalAmount Decimal        @map("total_amount")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+  supplier    Supplier       @relation(fields: [supplierId], references: [id])
+  user        User           @relation(fields: [userId], references: [id])
+  items       PurchaseItem[]
+
+  @@index([supplierId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("purchases")
+}
+
+model PurchaseItem {
+  id         String   @id @default(uuid())
+  purchaseId String   @map("purchase_id")
+  productId  String   @map("product_id")
+  quantity   Int
+  unitCost   Decimal  @map("unit_cost")
+  subtotal   Decimal
+  createdAt  DateTime @default(now()) @map("created_at")
+  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id])
+
+  @@index([purchaseId])
+  @@index([productId])
+  @@map("purchase_items")
 }
