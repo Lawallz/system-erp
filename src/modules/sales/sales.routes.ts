@@ -30,11 +30,44 @@ router.use(ensureAuthenticated);
  *       - Sales
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - items
+ *             properties:
+ *               items:
+ *                 type: array
+ *                 minItems: 1
+ *                 description: Lista de itens da venda. O mesmo produto não pode aparecer mais de uma vez.
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - productId
+ *                     - quantity
+ *                   properties:
+ *                     productId:
+ *                       type: string
+ *                       format: uuid
+ *                       description: ID do produto vendido
+ *                       example: 85244462-52b1-40be-b32e-6eacd758b52a
+ *                     quantity:
+ *                       type: integer
+ *                       minimum: 1
+ *                       description: Quantidade vendida
+ *                       example: 2
+ *           example:
+ *             items:
+ *               - productId: 85244462-52b1-40be-b32e-6eacd758b52a
+ *                 quantity: 2
  *     responses:
  *       201:
  *         description: Venda registrada com sucesso
  *       400:
- *         description: Dados inválidos
+ *         description: Dados inválidos ou regra de negócio não atendida
  *       401:
  *         description: Não autenticado
  */
