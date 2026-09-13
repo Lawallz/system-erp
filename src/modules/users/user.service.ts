@@ -270,7 +270,17 @@ export class UserService {
       data: {
         isActive: false,
       },
-    });
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isActive: true,
+        roleId: true,
+        createdAt: true,
+        updatedAt: true,
+        role: true,
+  },
+});
 
     await prisma.auditLog.create({
       data: {
@@ -309,6 +319,16 @@ export class UserService {
       where: { id },
       data: {
         isActive: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isActive: true,
+        roleId: true,
+        createdAt: true,
+        updatedAt: true,
+        role: true,
       },
     });
 
