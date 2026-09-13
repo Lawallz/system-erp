@@ -87,4 +87,27 @@ export class StockService {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  async listLowStock() {
+  const products = await prisma.product.findMany({
+    where: {
+      isActive: true,
+    },
+    select: {
+      id: true,
+      sku: true,
+      name: true,
+      stockQuantity: true,
+      minStockAlert: true,
+    },
+    orderBy: {
+      stockQuantity: 'asc',
+    },
+  });
+
+  return products.filter(
+    (product) => product.stockQuantity <= product.minStockAlert
+  );
 }
+}
+
