@@ -17,6 +17,16 @@ const swaggerOptions: swaggerJSDoc.Options = {
         description: 'Servidor local',
       },
     ],
+
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
   },
 
   apis: ['./src/modules/**/*.routes.ts'],
