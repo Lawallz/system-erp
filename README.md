@@ -1,8 +1,3 @@
-Sim. Fica bem mais natural sem os emojis. Também tiraria alguns títulos muito "marketing" e deixaria com cara de README de projeto real.
-
-Aqui está a versão limpa:
-
-````markdown
 # MiniERP — Sistema de Gestão para Pequenos Comércios
 
 Sistema de gestão empresarial desenvolvido para pequenos comércios, com foco em
