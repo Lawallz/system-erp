@@ -8,6 +8,7 @@ import stockRoutes from './modules/stock/stock.routes.js';
 import salesRoutes from './modules/sales/sales.routes.js';
 import categoriesRoutes from './modules/categories/categories.routes.js';
 import supplierRoutes from './modules/suppliers/supplier.routes.js';
+import purchaseRoutes from './modules/purchases/purchase.routes.js';
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/stock', stockRoutes);
 app.use('/api/sales', salesRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/suppliers', supplierRoutes);
+app.use('/api/purchases', purchaseRoutes);
 
 app.use(errorHandler);
 
