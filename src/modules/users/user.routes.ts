@@ -50,40 +50,77 @@ const userController = new UserController();
  *               name:
  *                 type: string
  *                 minLength: 2
- *                 description: Nome do usuário
  *                 example: João da Silva
  *               email:
  *                 type: string
  *                 format: email
- *                 description: E-mail do usuário
  *                 example: joao@minierp.com
  *               password:
  *                 type: string
  *                 format: password
  *                 minLength: 6
- *                 description: Senha do usuário
  *                 example: "123456"
  *               roleId:
  *                 type: string
  *                 format: uuid
- *                 description: ID da função atribuída ao usuário
- *                 example: 3da575ee-ecae-40be-b5f7-1f74b9e576bc
+ *                 example: eff161d8-a852-4538-ba8d-6c41d0d99b89
  *           example:
  *             name: João da Silva
  *             email: joao@minierp.com
  *             password: "123456"
- *             roleId: 3da575ee-ecae-40be-b5f7-1f74b9e576bc
+ *             roleId: eff161d8-a852-4538-ba8d-6c41d0d99b89
  *     responses:
  *       201:
  *         description: Usuário cadastrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                       example: João da Silva
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       example: joao@minierp.com
+ *                     isActive:
+ *                       type: boolean
+ *                       example: true
+ *                     role:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                           example: Administrador
+ *                         description:
+ *                           type: string
+ *                           nullable: true
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
  *         description: Dados inválidos
  *       401:
  *         description: Não autenticado
  *       403:
  *         description: Usuário sem permissão
+ *       404:
+ *         description: Função não encontrada
  *       409:
- *         description: Usuário já cadastrado
+ *         description: Já existe um usuário com este e-mail
  */
 userRoutes.post(
   '/',
@@ -105,6 +142,46 @@ userRoutes.post(
  *     responses:
  *       200:
  *         description: Lista de usuários retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                       isActive:
+ *                         type: boolean
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                       role:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
+ *                           description:
+ *                             type: string
+ *                             nullable: true
  *       401:
  *         description: Não autenticado
  *       403:
@@ -132,10 +209,78 @@ userRoutes.get(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID do usuário
  *     responses:
  *       200:
  *         description: Usuário encontrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                     isActive:
+ *                       type: boolean
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     role:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                         description:
+ *                           type: string
+ *                           nullable: true
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
+ *                         updatedAt:
+ *                           type: string
+ *                           format: date-time
+ *                         rolePermissions:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               roleId:
+ *                                 type: string
+ *                                 format: uuid
+ *                               permissionId:
+ *                                 type: string
+ *                                 format: uuid
+ *                               permission:
+ *                                 type: object
+ *                                 properties:
+ *                                   id:
+ *                                     type: string
+ *                                     format: uuid
+ *                                   name:
+ *                                     type: string
+ *                                     example: users:read
+ *                                   description:
+ *                                     type: string
+ *                                     nullable: true
  *       401:
  *         description: Não autenticado
  *       403:
@@ -165,6 +310,7 @@ userRoutes.get(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID do usuário
  *     requestBody:
  *       required: true
@@ -176,24 +322,56 @@ userRoutes.get(
  *               name:
  *                 type: string
  *                 minLength: 2
- *                 description: Nome do usuário
  *                 example: João da Silva Atualizado
  *               email:
  *                 type: string
  *                 format: email
- *                 description: E-mail do usuário
  *                 example: joao.atualizado@minierp.com
  *               roleId:
  *                 type: string
  *                 format: uuid
- *                 description: ID da função atribuída ao usuário
- *                 example: 3da575ee-ecae-40be-b5f7-1f74b9e576bc
+ *                 example: 88c8fc50-e401-4ef6-b13d-dfb9072783b4
  *           example:
  *             name: João da Silva Atualizado
  *             email: joao.atualizado@minierp.com
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                     isActive:
+ *                       type: boolean
+ *                     role:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                         description:
+ *                           type: string
+ *                           nullable: true
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
  *         description: Dados inválidos
  *       401:
@@ -201,7 +379,9 @@ userRoutes.get(
  *       403:
  *         description: Usuário sem permissão
  *       404:
- *         description: Usuário não encontrado
+ *         description: Usuário ou função não encontrada
+ *       409:
+ *         description: Já existe outro usuário com este e-mail
  */
 userRoutes.put(
   '/:id',
@@ -226,6 +406,7 @@ userRoutes.put(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID do usuário
  *     requestBody:
  *       required: true
@@ -240,13 +421,23 @@ userRoutes.put(
  *                 type: string
  *                 format: password
  *                 minLength: 6
- *                 description: Nova senha do usuário
  *                 example: "654321"
  *           example:
  *             password: "654321"
  *     responses:
  *       200:
  *         description: Senha atualizada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Senha atualizada com sucesso
  *       400:
  *         description: Dados inválidos
  *       401:
@@ -279,12 +470,55 @@ userRoutes.patch(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID do usuário
  *     responses:
  *       200:
  *         description: Usuário desativado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                     isActive:
+ *                       type: boolean
+ *                       example: false
+ *                     roleId:
+ *                       type: string
+ *                       format: uuid
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     role:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                         description:
+ *                           type: string
+ *                           nullable: true
  *       400:
- *         description: Usuário já está inativo
+ *         description: Usuário já está inativo ou tentativa de desativar o próprio usuário
  *       401:
  *         description: Não autenticado
  *       403:
@@ -314,10 +548,53 @@ userRoutes.patch(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID do usuário
  *     responses:
  *       200:
  *         description: Usuário ativado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                     isActive:
+ *                       type: boolean
+ *                       example: true
+ *                     roleId:
+ *                       type: string
+ *                       format: uuid
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     role:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                         description:
+ *                           type: string
+ *                           nullable: true
  *       400:
  *         description: Usuário já está ativo
  *       401:
