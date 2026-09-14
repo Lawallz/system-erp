@@ -66,10 +66,64 @@ router.use(ensureAuthenticated);
  *     responses:
  *       201:
  *         description: Venda registrada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     totalAmount:
+ *                       type: string
+ *                       example: "200"
+ *                     userId:
+ *                       type: string
+ *                       format: uuid
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           saleId:
+ *                             type: string
+ *                             format: uuid
+ *                           productId:
+ *                             type: string
+ *                             format: uuid
+ *                           quantity:
+ *                             type: integer
+ *                             example: 2
+ *                           unitPrice:
+ *                             type: string
+ *                             example: "100"
+ *                           subtotal:
+ *                             type: string
+ *                             example: "200"
+ *                           createdAt:
+ *                             type: string
+ *                             format: date-time
  *       400:
- *         description: Dados inválidos ou regra de negócio não atendida
+ *         description: Dados inválidos, produto inativo ou estoque insuficiente
  *       401:
  *         description: Não autenticado
+ *       404:
+ *         description: Um ou mais produtos não foram encontrados
  */
 router.post(
   '/',
@@ -89,6 +143,79 @@ router.post(
  *     responses:
  *       200:
  *         description: Lista de vendas retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       totalAmount:
+ *                         type: string
+ *                         example: "200"
+ *                       userId:
+ *                         type: string
+ *                         format: uuid
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                       user:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                             example: Administrador
+ *                           email:
+ *                             type: string
+ *                             format: email
+ *                             example: admin@minierp.com
+ *                       items:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             id:
+ *                               type: string
+ *                               format: uuid
+ *                             saleId:
+ *                               type: string
+ *                               format: uuid
+ *                             productId:
+ *                               type: string
+ *                               format: uuid
+ *                             quantity:
+ *                               type: integer
+ *                               example: 2
+ *                             unitPrice:
+ *                               type: string
+ *                               example: "100"
+ *                             subtotal:
+ *                               type: string
+ *                               example: "200"
+ *                             createdAt:
+ *                               type: string
+ *                               format: date-time
+ *                             product:
+ *                               type: object
+ *                               properties:
+ *                                 name:
+ *                                   type: string
+ *                                   example: Produto Teste Estoque
+ *                                 sku:
+ *                                   type: string
+ *                                   example: TEST-001
  *       401:
  *         description: Não autenticado
  */
