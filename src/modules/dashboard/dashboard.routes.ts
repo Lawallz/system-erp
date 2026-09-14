@@ -27,7 +27,7 @@ const dashboardController = new DashboardController();
  *       - Dashboard
  *     security:
  *       - bearerAuth: []
-  *     responses:
+ *     responses:
  *       200:
  *         description: Resumo do dashboard retornado com sucesso
  *         content:
@@ -156,9 +156,9 @@ const dashboardController = new DashboardController();
  *                       items:
  *                         type: object
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 dashboardRoutes.get(
   '/',
