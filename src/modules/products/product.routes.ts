@@ -62,9 +62,9 @@ const productController = new ProductController();
  *                         type: integer
  *                         example: 4
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 productRoutes.get(
   '/categories',
@@ -128,11 +128,11 @@ productRoutes.get(
  *                   type: string
  *                   format: date-time
  *       400:
- *         description: Dados inválidos ou categoria já cadastrada
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 productRoutes.post(
   '/categories',
@@ -216,9 +216,9 @@ productRoutes.post(
  *                         type: string
  *                         format: date-time
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 productRoutes.get(
   '/',
@@ -342,13 +342,13 @@ productRoutes.get(
  *                   type: string
  *                   format: date-time
  *       400:
- *         description: Dados inválidos ou SKU já cadastrado
- *       404:
- *         description: Categoria informada não existe
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
  */
 productRoutes.post(
   '/',
