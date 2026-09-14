@@ -71,9 +71,9 @@ const reportController = new ReportController();
  *                             type: number
  *                             example: 1100
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 reportRoutes.get(
   '/sales',
@@ -135,9 +135,9 @@ reportRoutes.get(
  *                             type: integer
  *                             example: 5
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 reportRoutes.get(
   '/stock',
@@ -249,9 +249,9 @@ reportRoutes.get(
  *                                 type: integer
  *                                 example: 0
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 reportRoutes.get(
   '/products',
@@ -317,9 +317,9 @@ reportRoutes.get(
  *                               - C
  *                             example: A
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 reportRoutes.get(
   '/abc',
