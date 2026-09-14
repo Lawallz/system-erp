@@ -60,6 +60,33 @@ const roleController = new RoleController();
  *     responses:
  *       201:
  *         description: Função cadastrada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                       example: Supervisor
+ *                     description:
+ *                       type: string
+ *                       nullable: true
+ *                       example: Responsável pela supervisão operacional
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
  *         description: Dados inválidos
  *       401:
@@ -89,6 +116,43 @@ roleRoutes.post(
  *     responses:
  *       200:
  *         description: Lista de funções retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                         example: Administrador
+ *                       description:
+ *                         type: string
+ *                         nullable: true
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                       _count:
+ *                         type: object
+ *                         properties:
+ *                           users:
+ *                             type: integer
+ *                             example: 2
+ *                           rolePermissions:
+ *                             type: integer
+ *                             example: 10
  *       401:
  *         description: Não autenticado
  *       403:
@@ -113,6 +177,29 @@ roleRoutes.get(
  *     responses:
  *       200:
  *         description: Lista de permissões retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                         example: users:read
+ *                       description:
+ *                         type: string
+ *                         nullable: true
+ *                         example: Permite visualizar usuários
  *       401:
  *         description: Não autenticado
  *       403:
@@ -140,10 +227,66 @@ roleRoutes.get(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID da função
  *     responses:
  *       200:
  *         description: Função encontrada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                       example: Administrador
+ *                     description:
+ *                       type: string
+ *                       nullable: true
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     rolePermissions:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           roleId:
+ *                             type: string
+ *                             format: uuid
+ *                           permissionId:
+ *                             type: string
+ *                             format: uuid
+ *                           permission:
+ *                             type: object
+ *                             properties:
+ *                               id:
+ *                                 type: string
+ *                                 format: uuid
+ *                               name:
+ *                                 type: string
+ *                                 example: users:read
+ *                               description:
+ *                                 type: string
+ *                                 nullable: true
+ *                     _count:
+ *                       type: object
+ *                       properties:
+ *                         users:
+ *                           type: integer
+ *                           example: 2
  *       401:
  *         description: Não autenticado
  *       403:
@@ -173,6 +316,7 @@ roleRoutes.get(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID da função
  *     requestBody:
  *       required: true
@@ -197,6 +341,32 @@ roleRoutes.get(
  *     responses:
  *       200:
  *         description: Função atualizada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                       example: Supervisor Operacional
+ *                     description:
+ *                       type: string
+ *                       nullable: true
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
  *         description: Dados inválidos
  *       401:
@@ -231,6 +401,7 @@ roleRoutes.put(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID da função
  *     requestBody:
  *       required: true
@@ -254,6 +425,55 @@ roleRoutes.put(
  *     responses:
  *       200:
  *         description: Permissões atualizadas com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                       example: Supervisor Operacional
+ *                     description:
+ *                       type: string
+ *                       nullable: true
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     rolePermissions:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           roleId:
+ *                             type: string
+ *                             format: uuid
+ *                           permissionId:
+ *                             type: string
+ *                             format: uuid
+ *                           permission:
+ *                             type: object
+ *                             properties:
+ *                               id:
+ *                                 type: string
+ *                                 format: uuid
+ *                               name:
+ *                                 type: string
+ *                                 example: users:read
+ *                               description:
+ *                                 type: string
+ *                                 nullable: true
  *       400:
  *         description: Dados inválidos
  *       401:
@@ -261,7 +481,7 @@ roleRoutes.put(
  *       403:
  *         description: Usuário sem permissão
  *       404:
- *         description: Função ou permissão não encontrada
+ *         description: Função ou uma ou mais permissões não encontradas
  */
 roleRoutes.put(
   '/:id/permissions',
