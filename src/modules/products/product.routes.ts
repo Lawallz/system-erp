@@ -32,6 +32,35 @@ const productController = new ProductController();
  *     responses:
  *       200:
  *         description: Lista de categorias retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     format: uuid
+ *                   name:
+ *                     type: string
+ *                     example: Eletrônicos
+ *                   description:
+ *                     type: string
+ *                     nullable: true
+ *                     example: Produtos eletrônicos e acessórios
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   _count:
+ *                     type: object
+ *                     properties:
+ *                       products:
+ *                         type: integer
+ *                         example: 4
  *       401:
  *         description: Não autenticado
  *       403:
@@ -77,8 +106,29 @@ productRoutes.get(
  *     responses:
  *       201:
  *         description: Categoria criada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                   example: Eletrônicos
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                   example: Produtos eletrônicos e acessórios
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
  *       400:
- *         description: Dados inválidos
+ *         description: Dados inválidos ou categoria já cadastrada
  *       401:
  *         description: Não autenticado
  *       403:
@@ -95,7 +145,7 @@ productRoutes.post(
  * @swagger
  * /api/products:
  *   get:
- *     summary: Lista os produtos
+ *     summary: Lista os produtos ativos
  *     tags:
  *       - Products
  *     security:
@@ -103,6 +153,68 @@ productRoutes.post(
  *     responses:
  *       200:
  *         description: Lista de produtos retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     format: uuid
+ *                   sku:
+ *                     type: string
+ *                     example: PROD-001
+ *                   name:
+ *                     type: string
+ *                     example: Teclado Mecânico
+ *                   description:
+ *                     type: string
+ *                     nullable: true
+ *                     example: Teclado mecânico USB com iluminação
+ *                   price:
+ *                     type: string
+ *                     example: "249.90"
+ *                   costPrice:
+ *                     type: string
+ *                     example: "150.00"
+ *                   stockQuantity:
+ *                     type: integer
+ *                     example: 18
+ *                   minStockAlert:
+ *                     type: integer
+ *                     example: 5
+ *                   categoryId:
+ *                     type: string
+ *                     format: uuid
+ *                   isActive:
+ *                     type: boolean
+ *                     example: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   category:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                         example: Eletrônicos
+ *                       description:
+ *                         type: string
+ *                         nullable: true
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
  *       401:
  *         description: Não autenticado
  *       403:
@@ -187,8 +299,52 @@ productRoutes.get(
  *     responses:
  *       201:
  *         description: Produto criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   format: uuid
+ *                 sku:
+ *                   type: string
+ *                   example: PROD-001
+ *                 name:
+ *                   type: string
+ *                   example: Teclado Mecânico
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                   example: Teclado mecânico USB com iluminação
+ *                 price:
+ *                   type: string
+ *                   example: "249.90"
+ *                 costPrice:
+ *                   type: string
+ *                   example: "150.00"
+ *                 stockQuantity:
+ *                   type: integer
+ *                   example: 0
+ *                 minStockAlert:
+ *                   type: integer
+ *                   example: 5
+ *                 categoryId:
+ *                   type: string
+ *                   format: uuid
+ *                 isActive:
+ *                   type: boolean
+ *                   example: true
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
  *       400:
- *         description: Dados inválidos
+ *         description: Dados inválidos ou SKU já cadastrado
+ *       404:
+ *         description: Categoria informada não existe
  *       401:
  *         description: Não autenticado
  *       403:
