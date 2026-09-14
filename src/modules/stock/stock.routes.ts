@@ -101,9 +101,9 @@ const stockController = new StockController();
  *                             format: email
  *                             example: admin@minierp.com
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 stockRoutes.get(
   '/movements',
@@ -153,9 +153,9 @@ stockRoutes.get(
  *                         type: integer
  *                         example: 5
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 stockRoutes.get(
   '/low-stock',
@@ -305,13 +305,13 @@ stockRoutes.get(
  *                           type: string
  *                           format: date-time
  *       400:
- *         description: Dados inválidos ou estoque insuficiente
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Produto não encontrado ou inativo
+ *         $ref: '#/components/responses/NotFound'
  */
 stockRoutes.post(
   '/movements',
