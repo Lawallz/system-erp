@@ -122,13 +122,13 @@ const purchaseController = new PurchaseController();
  *                       items:
  *                         type: object
  *       400:
- *         description: Dados inválidos
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Fornecedor não encontrado ou inativo
+ *         $ref: '#/components/responses/NotFound'
  */
 purchaseRoutes.post(
   '/',
@@ -247,13 +247,13 @@ purchaseRoutes.post(
  *                           type: string
  *                           format: date-time
  *       400:
- *         description: Dados inválidos ou compra não está pendente
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Compra ou produto não encontrado ou produto inativo
+ *         $ref: '#/components/responses/NotFound'
  */
 purchaseRoutes.post(
   '/:id/items',
@@ -374,9 +374,9 @@ purchaseRoutes.post(
  *                                   type: string
  *                                   example: Produto Teste Estoque
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 purchaseRoutes.get(
   '/',
@@ -533,11 +533,11 @@ purchaseRoutes.get(
  *                                 type: string
  *                                 format: date-time
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Compra não encontrada
+ *         $ref: '#/components/responses/NotFound'
  */
 purchaseRoutes.get(
   '/:id',
@@ -653,13 +653,13 @@ purchaseRoutes.get(
  *                             type: string
  *                             format: date-time
  *       400:
- *         description: Compra não está pendente ou não possui itens
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Compra ou produto não encontrado ou produto inativo
+ *         $ref: '#/components/responses/NotFound'
  */
 purchaseRoutes.patch(
   '/:id/receive',
