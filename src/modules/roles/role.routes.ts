@@ -88,13 +88,13 @@ const roleController = new RoleController();
  *                       type: string
  *                       format: date-time
  *       400:
- *         description: Dados inválidos
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       409:
- *         description: Já existe uma função com este nome
+ *         $ref: '#/components/responses/Conflict'
  */
 roleRoutes.post(
   '/',
@@ -154,9 +154,9 @@ roleRoutes.post(
  *                             type: integer
  *                             example: 10
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 roleRoutes.get(
   '/',
@@ -201,9 +201,9 @@ roleRoutes.get(
  *                         nullable: true
  *                         example: Permite visualizar usuários
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 roleRoutes.get(
   '/permissions',
@@ -288,11 +288,11 @@ roleRoutes.get(
  *                           type: integer
  *                           example: 2
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Função não encontrada
+ *         $ref: '#/components/responses/NotFound'
  */
 roleRoutes.get(
   '/:id',
@@ -368,15 +368,15 @@ roleRoutes.get(
  *                       type: string
  *                       format: date-time
  *       400:
- *         description: Dados inválidos
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Função não encontrada
+ *         $ref: '#/components/responses/NotFound'
  *       409:
- *         description: Já existe uma função com este nome
+ *         $ref: '#/components/responses/Conflict'
  */
 roleRoutes.put(
   '/:id',
@@ -475,13 +475,13 @@ roleRoutes.put(
  *                                 type: string
  *                                 nullable: true
  *       400:
- *         description: Dados inválidos
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Função ou uma ou mais permissões não encontradas
+ *         $ref: '#/components/responses/NotFound'
  */
 roleRoutes.put(
   '/:id/permissions',
