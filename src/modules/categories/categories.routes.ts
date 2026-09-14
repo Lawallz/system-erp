@@ -83,9 +83,9 @@ router.use(ensureAuthenticated);
  *                       type: string
  *                       format: date-time
  *       400:
- *         description: Dados inválidos ou categoria já cadastrada
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  */
 router.post(
   '/',
@@ -140,7 +140,7 @@ router.post(
  *                             type: integer
  *                             example: 4
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  */
 router.get(
   '/',
@@ -235,9 +235,9 @@ router.get(
  *                             type: string
  *                             format: date-time
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       404:
- *         description: Categoria não encontrada
+ *         $ref: '#/components/responses/NotFound'
  */
 router.get(
   '/:id',
@@ -308,11 +308,11 @@ router.get(
  *                       type: string
  *                       format: date-time
  *       400:
- *         description: Dados inválidos ou já existe outra categoria com esse nome
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       404:
- *         description: Categoria não encontrada
+ *         $ref: '#/components/responses/NotFound'
  */
 router.put(
   '/:id',
@@ -341,11 +341,11 @@ router.put(
  *       204:
  *         description: Categoria excluída com sucesso
  *       400:
- *         description: Não é possível excluir uma categoria com produtos vinculados
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       404:
- *         description: Categoria não encontrada
+ *         $ref: '#/components/responses/NotFound'
  */
 router.delete(
   '/:id',
