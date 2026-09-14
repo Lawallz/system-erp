@@ -112,15 +112,15 @@ const userController = new UserController();
  *                       type: string
  *                       format: date-time
  *       400:
- *         description: Dados inválidos
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Função não encontrada
+ *         $ref: '#/components/responses/NotFound'
  *       409:
- *         description: Já existe um usuário com este e-mail
+ *         $ref: '#/components/responses/Conflict'
  */
 userRoutes.post(
   '/',
@@ -183,9 +183,9 @@ userRoutes.post(
  *                             type: string
  *                             nullable: true
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 userRoutes.get(
   '/',
@@ -282,11 +282,11 @@ userRoutes.get(
  *                                     type: string
  *                                     nullable: true
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Usuário não encontrado
+ *         $ref: '#/components/responses/NotFound'
  */
 userRoutes.get(
   '/:id',
@@ -373,15 +373,15 @@ userRoutes.get(
  *                       type: string
  *                       format: date-time
  *       400:
- *         description: Dados inválidos
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Usuário ou função não encontrada
+ *         $ref: '#/components/responses/NotFound'
  *       409:
- *         description: Já existe outro usuário com este e-mail
+ *         $ref: '#/components/responses/Conflict'
  */
 userRoutes.put(
   '/:id',
@@ -439,13 +439,13 @@ userRoutes.put(
  *                   type: string
  *                   example: Senha atualizada com sucesso
  *       400:
- *         description: Dados inválidos
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Usuário não encontrado
+ *         $ref: '#/components/responses/NotFound'
  */
 userRoutes.patch(
   '/:id/password',
@@ -518,13 +518,13 @@ userRoutes.patch(
  *                           type: string
  *                           nullable: true
  *       400:
- *         description: Usuário já está inativo ou tentativa de desativar o próprio usuário
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Usuário não encontrado
+ *         $ref: '#/components/responses/NotFound'
  */
 userRoutes.patch(
   '/:id/deactivate',
@@ -596,13 +596,13 @@ userRoutes.patch(
  *                           type: string
  *                           nullable: true
  *       400:
- *         description: Usuário já está ativo
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Usuário não encontrado
+ *         $ref: '#/components/responses/NotFound'
  */
 userRoutes.patch(
   '/:id/activate',
