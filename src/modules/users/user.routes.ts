@@ -35,6 +35,44 @@ const userController = new UserController();
  *       - Users
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - roleId
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 2
+ *                 description: Nome do usuário
+ *                 example: João da Silva
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: E-mail do usuário
+ *                 example: joao@minierp.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 6
+ *                 description: Senha do usuário
+ *                 example: "123456"
+ *               roleId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: ID da função atribuída ao usuário
+ *                 example: 3da575ee-ecae-40be-b5f7-1f74b9e576bc
+ *           example:
+ *             name: João da Silva
+ *             email: joao@minierp.com
+ *             password: "123456"
+ *             roleId: 3da575ee-ecae-40be-b5f7-1f74b9e576bc
  *     responses:
  *       201:
  *         description: Usuário cadastrado com sucesso
@@ -44,6 +82,8 @@ const userController = new UserController();
  *         description: Não autenticado
  *       403:
  *         description: Usuário sem permissão
+ *       409:
+ *         description: Usuário já cadastrado
  */
 userRoutes.post(
   '/',
@@ -126,6 +166,31 @@ userRoutes.get(
  *         schema:
  *           type: string
  *         description: ID do usuário
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 2
+ *                 description: Nome do usuário
+ *                 example: João da Silva Atualizado
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: E-mail do usuário
+ *                 example: joao.atualizado@minierp.com
+ *               roleId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: ID da função atribuída ao usuário
+ *                 example: 3da575ee-ecae-40be-b5f7-1f74b9e576bc
+ *           example:
+ *             name: João da Silva Atualizado
+ *             email: joao.atualizado@minierp.com
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso
@@ -162,6 +227,23 @@ userRoutes.put(
  *         schema:
  *           type: string
  *         description: ID do usuário
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 6
+ *                 description: Nova senha do usuário
+ *                 example: "654321"
+ *           example:
+ *             password: "654321"
  *     responses:
  *       200:
  *         description: Senha atualizada com sucesso
@@ -201,6 +283,8 @@ userRoutes.patch(
  *     responses:
  *       200:
  *         description: Usuário desativado com sucesso
+ *       400:
+ *         description: Usuário já está inativo
  *       401:
  *         description: Não autenticado
  *       403:
@@ -234,6 +318,8 @@ userRoutes.patch(
  *     responses:
  *       200:
  *         description: Usuário ativado com sucesso
+ *       400:
+ *         description: Usuário já está ativo
  *       401:
  *         description: Não autenticado
  *       403:
