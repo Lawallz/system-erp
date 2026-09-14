@@ -46,27 +46,22 @@ const supplierController = new SupplierController();
  *               name:
  *                 type: string
  *                 minLength: 2
- *                 description: Nome do fornecedor
  *                 example: Distribuidora Tech LTDA
  *               document:
  *                 type: string
  *                 minLength: 5
- *                 description: Documento do fornecedor
  *                 example: "12345678000199"
  *               email:
  *                 type: string
  *                 format: email
- *                 description: E-mail do fornecedor
  *                 example: contato@distribuidoratech.com.br
  *               phone:
  *                 type: string
  *                 minLength: 8
- *                 description: Telefone do fornecedor
  *                 example: "11988887777"
  *               address:
  *                 type: string
  *                 minLength: 3
- *                 description: Endereço do fornecedor
  *                 example: São Paulo - SP, Brasil
  *           example:
  *             name: Distribuidora Tech LTDA
@@ -77,12 +72,57 @@ const supplierController = new SupplierController();
  *     responses:
  *       201:
  *         description: Fornecedor cadastrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                       example: Distribuidora Tech LTDA
+ *                     document:
+ *                       type: string
+ *                       nullable: true
+ *                       example: "12345678000199"
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       nullable: true
+ *                       example: contato@distribuidoratech.com.br
+ *                     phone:
+ *                       type: string
+ *                       nullable: true
+ *                       example: "11988887777"
+ *                     address:
+ *                       type: string
+ *                       nullable: true
+ *                       example: São Paulo - SP, Brasil
+ *                     isActive:
+ *                       type: boolean
+ *                       example: true
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
  *         description: Dados inválidos
  *       401:
  *         description: Não autenticado
  *       403:
  *         description: Usuário sem permissão
+ *       409:
+ *         description: Já existe um fornecedor com este nome ou documento
  */
 supplierRoutes.post(
   '/',
@@ -104,6 +144,48 @@ supplierRoutes.post(
  *     responses:
  *       200:
  *         description: Lista de fornecedores retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                         example: Fornecedor Teste LTDA
+ *                       document:
+ *                         type: string
+ *                         nullable: true
+ *                         example: "12345678000199"
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                         nullable: true
+ *                       phone:
+ *                         type: string
+ *                         nullable: true
+ *                       address:
+ *                         type: string
+ *                         nullable: true
+ *                       isActive:
+ *                         type: boolean
+ *                         example: true
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
  *       401:
  *         description: Não autenticado
  *       403:
@@ -131,10 +213,74 @@ supplierRoutes.get(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID do fornecedor
  *     responses:
  *       200:
  *         description: Fornecedor encontrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     document:
+ *                       type: string
+ *                       nullable: true
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       nullable: true
+ *                     phone:
+ *                       type: string
+ *                       nullable: true
+ *                     address:
+ *                       type: string
+ *                       nullable: true
+ *                     isActive:
+ *                       type: boolean
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     purchases:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           supplierId:
+ *                             type: string
+ *                             format: uuid
+ *                           userId:
+ *                             type: string
+ *                             format: uuid
+ *                           status:
+ *                             type: string
+ *                             example: PENDING
+ *                           totalAmount:
+ *                             type: string
+ *                             example: "500"
+ *                           createdAt:
+ *                             type: string
+ *                             format: date-time
+ *                           updatedAt:
+ *                             type: string
+ *                             format: date-time
  *       401:
  *         description: Não autenticado
  *       403:
@@ -164,6 +310,7 @@ supplierRoutes.get(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID do fornecedor
  *     requestBody:
  *       required: true
@@ -175,27 +322,22 @@ supplierRoutes.get(
  *               name:
  *                 type: string
  *                 minLength: 2
- *                 description: Nome do fornecedor
  *                 example: Distribuidora Tech Brasil LTDA
  *               document:
  *                 type: string
  *                 minLength: 5
- *                 description: Documento do fornecedor
  *                 example: "12345678000199"
  *               email:
  *                 type: string
  *                 format: email
- *                 description: E-mail do fornecedor
  *                 example: vendas@distribuidoratech.com.br
  *               phone:
  *                 type: string
  *                 minLength: 8
- *                 description: Telefone do fornecedor
  *                 example: "11999998888"
  *               address:
  *                 type: string
  *                 minLength: 3
- *                 description: Endereço do fornecedor
  *                 example: São Bernardo do Campo - SP, Brasil
  *           example:
  *             name: Distribuidora Tech Brasil LTDA
@@ -205,6 +347,43 @@ supplierRoutes.get(
  *     responses:
  *       200:
  *         description: Fornecedor atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     document:
+ *                       type: string
+ *                       nullable: true
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       nullable: true
+ *                     phone:
+ *                       type: string
+ *                       nullable: true
+ *                     address:
+ *                       type: string
+ *                       nullable: true
+ *                     isActive:
+ *                       type: boolean
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
  *         description: Dados inválidos
  *       401:
@@ -213,6 +392,8 @@ supplierRoutes.get(
  *         description: Usuário sem permissão
  *       404:
  *         description: Fornecedor não encontrado
+ *       409:
+ *         description: Já existe outro fornecedor com este nome ou documento
  */
 supplierRoutes.put(
   '/:id',
@@ -237,10 +418,49 @@ supplierRoutes.put(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID do fornecedor
  *     responses:
  *       200:
  *         description: Fornecedor ativado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     document:
+ *                       type: string
+ *                       nullable: true
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       nullable: true
+ *                     phone:
+ *                       type: string
+ *                       nullable: true
+ *                     address:
+ *                       type: string
+ *                       nullable: true
+ *                     isActive:
+ *                       type: boolean
+ *                       example: true
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
  *         description: Fornecedor já está ativo
  *       401:
@@ -272,10 +492,49 @@ supplierRoutes.patch(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID do fornecedor
  *     responses:
  *       200:
  *         description: Fornecedor desativado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     document:
+ *                       type: string
+ *                       nullable: true
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       nullable: true
+ *                     phone:
+ *                       type: string
+ *                       nullable: true
+ *                     address:
+ *                       type: string
+ *                       nullable: true
+ *                     isActive:
+ *                       type: boolean
+ *                       example: false
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
  *         description: Fornecedor já está inativo
  *       401:
