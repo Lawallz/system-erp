@@ -23,27 +23,51 @@ const roleController = new RoleController();
  * @swagger
  * tags:
  *   - name: Roles
- *     description: Gerenciamento de perfis e permissões
+ *     description: Gerenciamento de funções e permissões
  */
 
 /**
  * @swagger
  * /api/roles:
  *   post:
- *     summary: Cria um novo perfil
+ *     summary: Cadastra uma nova função
  *     tags:
  *       - Roles
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 2
+ *                 description: Nome da função
+ *                 example: Supervisor
+ *               description:
+ *                 type: string
+ *                 minLength: 3
+ *                 description: Descrição da função
+ *                 example: Responsável pela supervisão operacional
+ *           example:
+ *             name: Supervisor
+ *             description: Responsável pela supervisão operacional
  *     responses:
  *       201:
- *         description: Perfil criado com sucesso
+ *         description: Função cadastrada com sucesso
  *       400:
  *         description: Dados inválidos
  *       401:
  *         description: Não autenticado
  *       403:
  *         description: Usuário sem permissão
+ *       409:
+ *         description: Já existe uma função com este nome
  */
 roleRoutes.post(
   '/',
@@ -57,14 +81,14 @@ roleRoutes.post(
  * @swagger
  * /api/roles:
  *   get:
- *     summary: Lista os perfis
+ *     summary: Lista as funções
  *     tags:
  *       - Roles
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Lista de perfis retornada com sucesso
+ *         description: Lista de funções retornada com sucesso
  *       401:
  *         description: Não autenticado
  *       403:
@@ -105,7 +129,7 @@ roleRoutes.get(
  * @swagger
  * /api/roles/{id}:
  *   get:
- *     summary: Busca um perfil pelo ID
+ *     summary: Busca uma função pelo ID
  *     tags:
  *       - Roles
  *     security:
@@ -116,16 +140,16 @@ roleRoutes.get(
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do perfil
+ *         description: ID da função
  *     responses:
  *       200:
- *         description: Perfil encontrado com sucesso
+ *         description: Função encontrada com sucesso
  *       401:
  *         description: Não autenticado
  *       403:
  *         description: Usuário sem permissão
  *       404:
- *         description: Perfil não encontrado
+ *         description: Função não encontrada
  */
 roleRoutes.get(
   '/:id',
@@ -138,7 +162,7 @@ roleRoutes.get(
  * @swagger
  * /api/roles/{id}:
  *   put:
- *     summary: Atualiza um perfil
+ *     summary: Atualiza uma função
  *     tags:
  *       - Roles
  *     security:
@@ -149,10 +173,30 @@ roleRoutes.get(
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do perfil
+ *         description: ID da função
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 2
+ *                 description: Nome da função
+ *                 example: Supervisor Operacional
+ *               description:
+ *                 type: string
+ *                 minLength: 3
+ *                 description: Descrição da função
+ *                 example: Responsável pela supervisão das operações
+ *           example:
+ *             name: Supervisor Operacional
+ *             description: Responsável pela supervisão das operações
  *     responses:
  *       200:
- *         description: Perfil atualizado com sucesso
+ *         description: Função atualizada com sucesso
  *       400:
  *         description: Dados inválidos
  *       401:
@@ -160,7 +204,9 @@ roleRoutes.get(
  *       403:
  *         description: Usuário sem permissão
  *       404:
- *         description: Perfil não encontrado
+ *         description: Função não encontrada
+ *       409:
+ *         description: Já existe uma função com este nome
  */
 roleRoutes.put(
   '/:id',
@@ -174,7 +220,7 @@ roleRoutes.put(
  * @swagger
  * /api/roles/{id}/permissions:
  *   put:
- *     summary: Atualiza as permissões de um perfil
+ *     summary: Atualiza as permissões de uma função
  *     tags:
  *       - Roles
  *     security:
@@ -185,7 +231,26 @@ roleRoutes.put(
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do perfil
+ *         description: ID da função
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - permissionIds
+ *             properties:
+ *               permissionIds:
+ *                 type: array
+ *                 minItems: 1
+ *                 description: IDs das permissões atribuídas à função
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *           example:
+ *             permissionIds:
+ *               - 3da575ee-ecae-40be-b5f7-1f74b9e576bc
  *     responses:
  *       200:
  *         description: Permissões atualizadas com sucesso
@@ -196,7 +261,7 @@ roleRoutes.put(
  *       403:
  *         description: Usuário sem permissão
  *       404:
- *         description: Perfil não encontrado
+ *         description: Função ou permissão não encontrada
  */
 roleRoutes.put(
   '/:id/permissions',
