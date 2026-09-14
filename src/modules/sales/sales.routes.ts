@@ -119,11 +119,11 @@ router.use(ensureAuthenticated);
  *                             type: string
  *                             format: date-time
  *       400:
- *         description: Dados inválidos, produto inativo ou estoque insuficiente
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       404:
- *         description: Um ou mais produtos não foram encontrados
+ *         $ref: '#/components/responses/NotFound'
  */
 router.post(
   '/',
@@ -217,7 +217,7 @@ router.post(
  *                                   type: string
  *                                   example: TEST-001
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  */
 router.get(
   '/',
