@@ -6,7 +6,10 @@ import { ensureAuthenticated } from '../../middlewares/authMiddleware.js';
 
 import { validateSchema } from '../../middlewares/validateSchema.js';
 
-import { createCategorySchema, updateCategorySchema } from './categories.schema.js';
+import {
+  createCategorySchema,
+  updateCategorySchema,
+} from './categories.schema.js';
 
 const router = Router();
 
@@ -42,11 +45,9 @@ router.use(ensureAuthenticated);
  *               name:
  *                 type: string
  *                 minLength: 2
- *                 description: Nome da categoria
  *                 example: Informática
  *               description:
  *                 type: string
- *                 description: Descrição opcional da categoria
  *                 example: Produtos e acessórios de informática
  *           example:
  *             name: Informática
@@ -54,8 +55,35 @@ router.use(ensureAuthenticated);
  *     responses:
  *       201:
  *         description: Categoria criada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                       example: Informática
+ *                     description:
+ *                       type: string
+ *                       nullable: true
+ *                       example: Produtos e acessórios de informática
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
- *         description: Dados inválidos
+ *         description: Dados inválidos ou categoria já cadastrada
  *       401:
  *         description: Não autenticado
  */
@@ -77,6 +105,40 @@ router.post(
  *     responses:
  *       200:
  *         description: Lista de categorias retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                         example: Informática
+ *                       description:
+ *                         type: string
+ *                         nullable: true
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                       _count:
+ *                         type: object
+ *                         properties:
+ *                           products:
+ *                             type: integer
+ *                             example: 4
  *       401:
  *         description: Não autenticado
  */
@@ -100,10 +162,78 @@ router.get(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID da categoria
  *     responses:
  *       200:
  *         description: Categoria encontrada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                       example: Informática
+ *                     description:
+ *                       type: string
+ *                       nullable: true
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     products:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           sku:
+ *                             type: string
+ *                             example: PROD-001
+ *                           name:
+ *                             type: string
+ *                             example: Teclado Mecânico
+ *                           description:
+ *                             type: string
+ *                             nullable: true
+ *                           price:
+ *                             type: string
+ *                             example: "249.90"
+ *                           costPrice:
+ *                             type: string
+ *                             example: "150.00"
+ *                           stockQuantity:
+ *                             type: integer
+ *                             example: 10
+ *                           minStockAlert:
+ *                             type: integer
+ *                             example: 5
+ *                           categoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           isActive:
+ *                             type: boolean
+ *                             example: true
+ *                           createdAt:
+ *                             type: string
+ *                             format: date-time
+ *                           updatedAt:
+ *                             type: string
+ *                             format: date-time
  *       401:
  *         description: Não autenticado
  *       404:
@@ -129,6 +259,7 @@ router.get(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID da categoria
  *     requestBody:
  *       required: true
@@ -140,11 +271,9 @@ router.get(
  *               name:
  *                 type: string
  *                 minLength: 2
- *                 description: Novo nome da categoria
  *                 example: Informática e Tecnologia
  *               description:
  *                 type: string
- *                 description: Nova descrição da categoria
  *                 example: Produtos, periféricos e acessórios de tecnologia
  *           example:
  *             name: Informática e Tecnologia
@@ -152,8 +281,34 @@ router.get(
  *     responses:
  *       200:
  *         description: Categoria atualizada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                       example: Informática e Tecnologia
+ *                     description:
+ *                       type: string
+ *                       nullable: true
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       400:
- *         description: Dados inválidos
+ *         description: Dados inválidos ou já existe outra categoria com esse nome
  *       401:
  *         description: Não autenticado
  *       404:
@@ -180,10 +335,13 @@ router.put(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID da categoria
  *     responses:
  *       204:
  *         description: Categoria excluída com sucesso
+ *       400:
+ *         description: Não é possível excluir uma categoria com produtos vinculados
  *       401:
  *         description: Não autenticado
  *       404:
