@@ -47,18 +47,88 @@ const purchaseController = new PurchaseController();
  *                 type: string
  *                 format: uuid
  *                 description: ID do fornecedor da compra
- *                 example: 3da575ee-ecae-40be-b5f7-1f74b9e576bc
+ *                 example: a924cbf7-9061-433b-94a6-3c58927a7f00
  *           example:
- *             supplierId: 3da575ee-ecae-40be-b5f7-1f74b9e576bc
+ *             supplierId: a924cbf7-9061-433b-94a6-3c58927a7f00
  *     responses:
  *       201:
  *         description: Compra registrada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     supplierId:
+ *                       type: string
+ *                       format: uuid
+ *                     userId:
+ *                       type: string
+ *                       format: uuid
+ *                     status:
+ *                       type: string
+ *                       example: PENDING
+ *                     totalAmount:
+ *                       type: string
+ *                       example: "0"
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     supplier:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                           example: Fornecedor Teste LTDA
+ *                         document:
+ *                           type: string
+ *                           nullable: true
+ *                           example: "12345678000199"
+ *                         email:
+ *                           type: string
+ *                           format: email
+ *                           nullable: true
+ *                         phone:
+ *                           type: string
+ *                           nullable: true
+ *                         address:
+ *                           type: string
+ *                           nullable: true
+ *                         isActive:
+ *                           type: boolean
+ *                           example: true
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
+ *                         updatedAt:
+ *                           type: string
+ *                           format: date-time
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
  *       400:
  *         description: Dados inválidos
  *       401:
  *         description: Não autenticado
  *       403:
  *         description: Usuário sem permissão
+ *       404:
+ *         description: Fornecedor não encontrado ou inativo
  */
 purchaseRoutes.post(
   '/',
@@ -83,6 +153,7 @@ purchaseRoutes.post(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID da compra
  *     requestBody:
  *       required: true
@@ -98,19 +169,16 @@ purchaseRoutes.post(
  *               productId:
  *                 type: string
  *                 format: uuid
- *                 description: ID do produto
  *                 example: 85244462-52b1-40be-b32e-6eacd758b52a
  *               quantity:
  *                 type: integer
  *                 minimum: 1
- *                 description: Quantidade comprada
  *                 example: 10
  *               unitCost:
  *                 type: number
  *                 format: double
  *                 minimum: 0
  *                 exclusiveMinimum: true
- *                 description: Custo unitário do produto
  *                 example: 50
  *           example:
  *             productId: 85244462-52b1-40be-b32e-6eacd758b52a
@@ -119,14 +187,73 @@ purchaseRoutes.post(
  *     responses:
  *       201:
  *         description: Item adicionado à compra com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     item:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         purchaseId:
+ *                           type: string
+ *                           format: uuid
+ *                         productId:
+ *                           type: string
+ *                           format: uuid
+ *                         quantity:
+ *                           type: integer
+ *                           example: 10
+ *                         unitCost:
+ *                           type: string
+ *                           example: "50"
+ *                         subtotal:
+ *                           type: string
+ *                           example: "500"
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
+ *                     purchase:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         supplierId:
+ *                           type: string
+ *                           format: uuid
+ *                         userId:
+ *                           type: string
+ *                           format: uuid
+ *                         status:
+ *                           type: string
+ *                           example: PENDING
+ *                         totalAmount:
+ *                           type: string
+ *                           example: "500"
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
+ *                         updatedAt:
+ *                           type: string
+ *                           format: date-time
  *       400:
- *         description: Dados inválidos
+ *         description: Dados inválidos ou compra não está pendente
  *       401:
  *         description: Não autenticado
  *       403:
  *         description: Usuário sem permissão
  *       404:
- *         description: Compra ou produto não encontrado
+ *         description: Compra ou produto não encontrado ou produto inativo
  */
 purchaseRoutes.post(
   '/:id/items',
@@ -148,6 +275,104 @@ purchaseRoutes.post(
  *     responses:
  *       200:
  *         description: Lista de compras retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       supplierId:
+ *                         type: string
+ *                         format: uuid
+ *                       userId:
+ *                         type: string
+ *                         format: uuid
+ *                       status:
+ *                         type: string
+ *                         example: RECEIVED
+ *                       totalAmount:
+ *                         type: string
+ *                         example: "500"
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                       supplier:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
+ *                             example: Fornecedor Teste LTDA
+ *                           document:
+ *                             type: string
+ *                             nullable: true
+ *                             example: "12345678000199"
+ *                       user:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           name:
+ *                             type: string
+ *                             example: Administrador
+ *                           email:
+ *                             type: string
+ *                             format: email
+ *                             example: admin@minierp.com
+ *                       items:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             id:
+ *                               type: string
+ *                               format: uuid
+ *                             purchaseId:
+ *                               type: string
+ *                               format: uuid
+ *                             productId:
+ *                               type: string
+ *                               format: uuid
+ *                             quantity:
+ *                               type: integer
+ *                               example: 10
+ *                             unitCost:
+ *                               type: string
+ *                               example: "50"
+ *                             subtotal:
+ *                               type: string
+ *                               example: "500"
+ *                             createdAt:
+ *                               type: string
+ *                               format: date-time
+ *                             product:
+ *                               type: object
+ *                               properties:
+ *                                 id:
+ *                                   type: string
+ *                                   format: uuid
+ *                                 sku:
+ *                                   type: string
+ *                                   example: TEST-001
+ *                                 name:
+ *                                   type: string
+ *                                   example: Produto Teste Estoque
  *       401:
  *         description: Não autenticado
  *       403:
@@ -175,10 +400,138 @@ purchaseRoutes.get(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID da compra
  *     responses:
  *       200:
  *         description: Compra encontrada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     supplierId:
+ *                       type: string
+ *                       format: uuid
+ *                     userId:
+ *                       type: string
+ *                       format: uuid
+ *                     status:
+ *                       type: string
+ *                       example: RECEIVED
+ *                     totalAmount:
+ *                       type: string
+ *                       example: "500"
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     supplier:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                         document:
+ *                           type: string
+ *                           nullable: true
+ *                         email:
+ *                           type: string
+ *                           format: email
+ *                           nullable: true
+ *                         phone:
+ *                           type: string
+ *                           nullable: true
+ *                         address:
+ *                           type: string
+ *                           nullable: true
+ *                         isActive:
+ *                           type: boolean
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
+ *                         updatedAt:
+ *                           type: string
+ *                           format: date-time
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                         email:
+ *                           type: string
+ *                           format: email
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           purchaseId:
+ *                             type: string
+ *                             format: uuid
+ *                           productId:
+ *                             type: string
+ *                             format: uuid
+ *                           quantity:
+ *                             type: integer
+ *                           unitCost:
+ *                             type: string
+ *                           subtotal:
+ *                             type: string
+ *                           createdAt:
+ *                             type: string
+ *                             format: date-time
+ *                           product:
+ *                             type: object
+ *                             properties:
+ *                               id:
+ *                                 type: string
+ *                                 format: uuid
+ *                               sku:
+ *                                 type: string
+ *                               name:
+ *                                 type: string
+ *                               description:
+ *                                 type: string
+ *                                 nullable: true
+ *                               price:
+ *                                 type: string
+ *                               costPrice:
+ *                                 type: string
+ *                               stockQuantity:
+ *                                 type: integer
+ *                               minStockAlert:
+ *                                 type: integer
+ *                               categoryId:
+ *                                 type: string
+ *                                 format: uuid
+ *                               isActive:
+ *                                 type: boolean
+ *                               createdAt:
+ *                                 type: string
+ *                                 format: date-time
+ *                               updatedAt:
+ *                                 type: string
+ *                                 format: date-time
  *       401:
  *         description: Não autenticado
  *       403:
@@ -208,18 +561,105 @@ purchaseRoutes.get(
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *         description: ID da compra
  *     responses:
  *       200:
  *         description: Compra recebida com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     supplierId:
+ *                       type: string
+ *                       format: uuid
+ *                     userId:
+ *                       type: string
+ *                       format: uuid
+ *                     status:
+ *                       type: string
+ *                       example: RECEIVED
+ *                     totalAmount:
+ *                       type: string
+ *                       example: "500"
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     supplier:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                           example: Fornecedor Teste LTDA
+ *                         document:
+ *                           type: string
+ *                           nullable: true
+ *                         email:
+ *                           type: string
+ *                           format: email
+ *                           nullable: true
+ *                         phone:
+ *                           type: string
+ *                           nullable: true
+ *                         address:
+ *                           type: string
+ *                           nullable: true
+ *                         isActive:
+ *                           type: boolean
+ *                           example: true
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
+ *                         updatedAt:
+ *                           type: string
+ *                           format: date-time
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           purchaseId:
+ *                             type: string
+ *                             format: uuid
+ *                           productId:
+ *                             type: string
+ *                             format: uuid
+ *                           quantity:
+ *                             type: integer
+ *                           unitCost:
+ *                             type: string
+ *                           subtotal:
+ *                             type: string
+ *                           createdAt:
+ *                             type: string
+ *                             format: date-time
  *       400:
- *         description: Compra não pode ser recebida
+ *         description: Compra não está pendente ou não possui itens
  *       401:
  *         description: Não autenticado
  *       403:
  *         description: Usuário sem permissão
  *       404:
- *         description: Compra não encontrada
+ *         description: Compra ou produto não encontrado ou produto inativo
  */
 purchaseRoutes.patch(
   '/:id/receive',
