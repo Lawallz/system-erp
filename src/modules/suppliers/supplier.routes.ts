@@ -116,13 +116,13 @@ const supplierController = new SupplierController();
  *                       type: string
  *                       format: date-time
  *       400:
- *         description: Dados inválidos
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       409:
- *         description: Já existe um fornecedor com este nome ou documento
+ *         $ref: '#/components/responses/Conflict'
  */
 supplierRoutes.post(
   '/',
@@ -187,9 +187,9 @@ supplierRoutes.post(
  *                         type: string
  *                         format: date-time
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  */
 supplierRoutes.get(
   '/',
@@ -282,11 +282,11 @@ supplierRoutes.get(
  *                             type: string
  *                             format: date-time
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Fornecedor não encontrado
+ *         $ref: '#/components/responses/NotFound'
  */
 supplierRoutes.get(
   '/:id',
@@ -385,15 +385,15 @@ supplierRoutes.get(
  *                       type: string
  *                       format: date-time
  *       400:
- *         description: Dados inválidos
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Fornecedor não encontrado
+ *         $ref: '#/components/responses/NotFound'
  *       409:
- *         description: Já existe outro fornecedor com este nome ou documento
+ *         $ref: '#/components/responses/Conflict'
  */
 supplierRoutes.put(
   '/:id',
@@ -462,13 +462,13 @@ supplierRoutes.put(
  *                       type: string
  *                       format: date-time
  *       400:
- *         description: Fornecedor já está ativo
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Fornecedor não encontrado
+ *         $ref: '#/components/responses/NotFound'
  */
 supplierRoutes.patch(
   '/:id/activate',
@@ -536,13 +536,13 @@ supplierRoutes.patch(
  *                       type: string
  *                       format: date-time
  *       400:
- *         description: Fornecedor já está inativo
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Não autenticado
+ *         $ref: '#/components/responses/Unauthorized'
  *       403:
- *         description: Usuário sem permissão
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
- *         description: Fornecedor não encontrado
+ *         $ref: '#/components/responses/NotFound'
  */
 supplierRoutes.patch(
   '/:id/deactivate',
