@@ -62,23 +62,17 @@ const authController = new AuthController();
  *                     role:
  *                       type: string
  *                       example: Admin
- *
  *       401:
  *         description: E-mail ou senha inválidos
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: error
- *                 message:
- *                   type: string
- *                   example: E-mail ou senha inválidos
- *
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               status: error
+ *               message: E-mail ou senha inválidos
  *       500:
- *         description: Erro interno no servidor
+ *         $ref: '#/components/responses/InternalServerError'
  */
 authRoutes.post('/login', authController.login.bind(authController));
 
