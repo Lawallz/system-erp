@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { SalesController } from './sales.controller.js';
 
-import { ensureAuthenticated } from '../../middlewares/authMiddleware.js';
+import { ensureAuthenticated, verifyPermission } from '../../middlewares/authMiddleware.js';
 
 import { validateSchema } from '../../middlewares/validateSchema.js';
 
@@ -127,6 +127,7 @@ router.use(ensureAuthenticated);
  */
 router.post(
   '/',
+  verifyPermission('sales:create'),
   validateSchema(createSaleSchema),
   salesController.create
 );
@@ -221,6 +222,7 @@ router.post(
  */
 router.get(
   '/',
+  verifyPermission('sales:read'),
   salesController.list
 );
 

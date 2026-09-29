@@ -1,7 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
+import { InventoryService } from './inventory.service.js';
 import { ReportService } from './report.service.js';
 
 export class ReportController {
+  async inventory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      res.json({ status: 'success', data: await new InventoryService().overview() });
+    } catch (error) { next(error); }
+  }
+
   private reportService = new ReportService();
 
   async sales(
