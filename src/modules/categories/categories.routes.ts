@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { CategoriesController } from './categories.controller.js';
 
-import { ensureAuthenticated } from '../../middlewares/authMiddleware.js';
+import { ensureAuthenticated, verifyPermission } from '../../middlewares/authMiddleware.js';
 
 import { validateSchema } from '../../middlewares/validateSchema.js';
 
@@ -89,6 +89,7 @@ router.use(ensureAuthenticated);
  */
 router.post(
   '/',
+  verifyPermission('products:create'),
   validateSchema(createCategorySchema),
   categoriesController.create
 );
@@ -144,6 +145,7 @@ router.post(
  */
 router.get(
   '/',
+  verifyPermission('products:read'),
   categoriesController.list
 );
 
@@ -241,6 +243,7 @@ router.get(
  */
 router.get(
   '/:id',
+  verifyPermission('products:read'),
   categoriesController.findById
 );
 
@@ -316,6 +319,7 @@ router.get(
  */
 router.put(
   '/:id',
+  verifyPermission('products:update'),
   validateSchema(updateCategorySchema),
   categoriesController.update
 );
@@ -349,6 +353,7 @@ router.put(
  */
 router.delete(
   '/:id',
+  verifyPermission('products:delete'),
   categoriesController.delete
 );
 

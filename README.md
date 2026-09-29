@@ -6,6 +6,52 @@ controle de produtos, estoque, compras, vendas, usuários e permissões de acess
 O projeto utiliza uma arquitetura REST, separação por módulos e regras de negócio
 aplicadas no backend.
 
+## Atualização: catálogo e reposição
+
+Esta versão acrescenta edição e ativação/desativação de produtos, além de um plano de reposição. Não altera `schema.prisma`, migrations, dados existentes ou `.env`.
+
+Para atualizar uma instalação já configurada, pare o servidor, selecione a branch `feat/catalog-inventory` e execute:
+
+```bash
+git fetch origin
+git switch feat/catalog-inventory
+git pull --ff-only origin feat/catalog-inventory
+npm ci
+npm run prisma:generate
+npm run dev
+```
+
+Não é necessário rodar seed, reset ou migrations para esta atualização. Use Node.js 24 para executar a suíte de testes atual.
+
+### Novos contratos
+
+| Endpoint | Permissão | Comportamento |
+| --- | --- | --- |
+| `GET /api/products?status=active/inactive/all` | `products:read` | Status ativo por padrão; mantém a resposta como array |
+| `PUT /api/products/:id` | `products:update` | Edita SKU, nome, descrição, preços, categoria e mínimo; não aceita saldo nem status |
+| `PATCH /api/products/:id/activate` | `products:update` | Reativa sem apagar saldo ou histórico |
+| `PATCH /api/products/:id/deactivate` | `products:delete` | Desativa sem apagar saldo ou histórico |
+| `GET /api/reports/inventory` | `reports:read` | Resumo de valorização e plano de reposição |
+
+Edição e mudança de status de produtos gravam auditoria na mesma transação da alteração. SKU duplicado retorna 409; dados inválidos, 400. Desativar produto pode impedir receber compras pendentes desse item até sua reativação.
+
+O relatório considera somente produtos ativos. Sugestão = `max(0, mínimo - estoque atual - quantidade em compras PENDING)`. O mínimo é a meta, não uma previsão de demanda: estoque exatamente no mínimo pode ter alerta, mas sugestão zero. Custos e valores potenciais usam os preços atuais cadastrados e não representam receita ou lucro realizados. O relatório usa aritmética decimal e uma leitura consistente de estoque e pedidos; valores monetários são strings com duas casas decimais. Não cria pedidos automaticamente.
+
+As rotas de categorias agora verificam as permissões `products:*`, e as de vendas verificam `sales:read/create`. Essas permissões já existem no seed. Usuários desativados deixam de acessar também essas rotas com tokens antigos.
+
+### Verificação e dependências
+
+```bash
+npm run typecheck
+npm test
+npm run build
+npm audit
+```
+
+Os testes exercitam as rotas HTTP reais, autenticação/permissões, validação, contrato de transações e cálculo de reposição com Prisma simulado. Não usam nem alteram seu PostgreSQL. A validação com banco real permanece necessária.
+
+O lockfile atualiza Express/body-parser/qs. Um override restrito ao `esbuild` usado pelo `tsup` remove o aviso de segurança da versão 0.27.x; build e testes são executados com essa resolução. Reavalie o override quando o tsup atualizar sua dependência.
+
 ## Tecnologias
 
 - Node.js

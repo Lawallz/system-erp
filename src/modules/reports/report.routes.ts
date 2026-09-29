@@ -328,4 +328,19 @@ reportRoutes.get(
   reportController.abc.bind(reportController)
 );
 
+/**
+ * @swagger
+ * /api/reports/inventory:
+ *   get:
+ *     summary: Valoriza estoque ativo e calcula reposição até o mínimo, descontando compras pendentes
+ *     tags: [Reports]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: Resumo e produtos com saldo, pendências, quantidade sugerida e custo estimado. Valores monetários são strings decimais.
+ *       401: { description: Não autenticado }
+ *       403: { description: Sem permissão reports:read }
+ */
+reportRoutes.get('/inventory', ensureAuthenticated, verifyPermission('reports:read'), reportController.inventory.bind(reportController));
+
 export default reportRoutes;

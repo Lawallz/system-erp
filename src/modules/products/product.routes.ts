@@ -145,7 +145,12 @@ productRoutes.post(
  * @swagger
  * /api/products:
  *   get:
- *     summary: Lista os produtos ativos
+ *     summary: Lista produtos por status (ativos por padrão)
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [active, inactive, all], default: active }
+ *         description: Filtro de situação do produto
  *     tags:
  *       - Products
  *     security:
@@ -356,5 +361,76 @@ productRoutes.post(
   verifyPermission('products:create'),
   productController.createProduct.bind(productController)
 );
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   put:
+ *     summary: Atualiza dados do produto sem alterar saldo ou histórico
+ *     tags: [Products]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             additionalProperties: false
+ *             properties:
+ *               sku: { type: string, minLength: 2 }
+ *               name: { type: string, minLength: 2 }
+ *               description: { type: string }
+ *               price: { type: number, minimum: 0, exclusiveMinimum: true }
+ *               costPrice: { type: number, minimum: 0, exclusiveMinimum: true }
+ *               minStockAlert: { type: integer, minimum: 0 }
+ *               categoryId: { type: string, format: uuid }
+ *     responses:
+ *       200: { description: Produto atualizado }
+ *       400: { description: Dados inválidos }
+ *       401: { description: Não autenticado }
+ *       403: { description: Sem permissão products:update }
+ *       404: { description: Produto ou categoria não encontrado }
+ *       409: { description: SKU já cadastrado }
+ */
+productRoutes.put('/:id', ensureAuthenticated, verifyPermission('products:update'), productController.updateProduct.bind(productController));
+
+/**
+ * @swagger
+ * /api/products/{id}/activate:
+ *   patch:
+ *     summary: Reativa um produto preservando seu histórico
+ *     tags: [Products]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200: { description: Produto ativo }
+ *       403: { description: Sem permissão products:update }
+ *       404: { description: Produto não encontrado }
+ * /api/products/{id}/deactivate:
+ *   patch:
+ *     summary: Desativa um produto preservando seu histórico e saldo
+ *     tags: [Products]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200: { description: Produto inativo }
+ *       403: { description: Sem permissão products:delete }
+ *       404: { description: Produto não encontrado }
+ */
+productRoutes.patch('/:id/activate', ensureAuthenticated, verifyPermission('products:update'), productController.activate.bind(productController));
+productRoutes.patch('/:id/deactivate', ensureAuthenticated, verifyPermission('products:delete'), productController.deactivate.bind(productController));
 
 export default productRoutes;
