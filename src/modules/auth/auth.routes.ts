@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import { ensureAuthenticated } from '../../middlewares/authMiddleware.js';
 import { AuthController } from './auth.controller.js';
 
 const authRoutes = Router();
@@ -75,5 +76,18 @@ const authController = new AuthController();
  *         $ref: '#/components/responses/InternalServerError'
  */
 authRoutes.post('/login', authController.login.bind(authController));
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Retorna o usuário ativo e suas permissões atuais
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Sessão e permissões, sem hash de senha }
+ *       401: { description: Sessão inválida ou usuário inativo }
+ */
+authRoutes.get('/me', ensureAuthenticated, authController.session.bind(authController));
 
 export default authRoutes;

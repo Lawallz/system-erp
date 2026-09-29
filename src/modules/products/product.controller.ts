@@ -1,3 +1,9 @@
+import prisma from '../../config/prisma.js';
+import { AppError } from '../../errors/appError.js';
+import { z } from 'zod';
+import { listRecords } from '../../shared/listing.js';
+import { isPaged } from '../../shared/pagination.js';
+import { sendPage } from '../../shared/listing.js';
 import { Request, Response, NextFunction } from 'express';
 import { ProductService } from './product.service.js';
 import {
@@ -9,6 +15,24 @@ import {
 } from './product.schema.js';
 
 export class ProductController {
+  async details(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = productIdSchema.parse(req.params.id);
+      const product = await prisma.product.findUnique({ where: { id }, include: { category: true } });
+      if (!product) throw new AppError('Produto não encontrado', 404);
+      res.json({ status: 'success', data: product });
+    } catch (error) { next(error); }
+  }
+  async history(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = productIdSchema.parse(req.params.id);
+      const kind = z.enum(['sales', 'purchases', 'movements']).parse(req.params.kind);
+      if (!await prisma.product.findUnique({ where: { id }, select: { id: true } })) throw new AppError('Produto não encontrado', 404);
+      const map = { sales: 'productSales', purchases: 'productPurchases', movements: 'productMovements' } as const;
+      res.json({ status: 'success', data: await listRecords(map[kind], req.query, id) });
+    } catch (error) { next(error); }
+  }
+
   async createCategory(
     req: Request,
     res: Response,
@@ -31,6 +55,7 @@ export class ProductController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      if (isPaged(req)) { await sendPage(req, res, 'categories'); return; }
       const productService = new ProductService();
       const categories = await productService.listCategories();
 
@@ -69,6 +94,7 @@ export class ProductController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      if (isPaged(req)) { await sendPage(req, res, 'products'); return; }
       const productService = new ProductService();
       const { status } = productListSchema.parse(req.query);
       const products = await productService.listProducts(status);

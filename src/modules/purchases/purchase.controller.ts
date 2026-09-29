@@ -1,3 +1,5 @@
+import { isPaged } from '../../shared/pagination.js';
+import { sendPage } from '../../shared/listing.js';
 import { Request, Response, NextFunction } from 'express';
 import { PurchaseService } from './purchase.service.js';
 
@@ -73,6 +75,7 @@ export class PurchaseController {
     next: NextFunction
   ): Promise<void> {
     try {
+      if (isPaged(req)) { await sendPage(req, res, 'purchases'); return; }
       const purchases = await this.purchaseService.list();
 
       res.status(200).json({

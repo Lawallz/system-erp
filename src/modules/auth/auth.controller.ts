@@ -3,6 +3,21 @@ import { AuthService } from './auth.service.js';
 import { loginSchema } from './auth.schema.js';
 
 export class AuthController {
+  async session(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      res.json({
+        status: 'success',
+        data: await new AuthService().session(req.user!.id),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const data = loginSchema.parse(req.body);

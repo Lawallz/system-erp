@@ -27,7 +27,7 @@ export function errorHandler(
       .json({
         status: 'error',
         message:
-          'Já existe um cadastro com esse identificador. Verifique o SKU, e-mail ou documento.',
+          'Já existe um cadastro com esse identificador. Verifique o SKU, código de barras, e-mail ou documento.',
       });
     return;
   }

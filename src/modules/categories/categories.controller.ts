@@ -1,3 +1,5 @@
+import { isPaged } from '../../shared/pagination.js';
+import { sendPage } from '../../shared/listing.js';
 import { Request, Response, NextFunction } from 'express';
 import { CategoriesService } from './categories.service.js';
 
@@ -15,6 +17,7 @@ export class CategoriesController {
 
   async list(req: Request, res: Response, next: NextFunction) {
     try {
+      if (isPaged(req)) { await sendPage(req, res, 'categories'); return; }
       const categories = await categoriesService.list();
       return res.status(200).json({ status: 'success', data: categories });
     } catch (error) {

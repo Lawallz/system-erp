@@ -1,3 +1,5 @@
+import { isPaged } from '../../shared/pagination.js';
+import { sendPage } from '../../shared/listing.js';
 import { Request, Response, NextFunction } from 'express';
 
 import { UserService } from './user.service.js';
@@ -42,6 +44,7 @@ export class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
+      if (isPaged(req)) { await sendPage(req, res, 'users'); return; }
       const users = await this.userService.list();
 
       res.status(200).json({
