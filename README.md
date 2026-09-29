@@ -6,22 +6,42 @@ controle de produtos, estoque, compras, vendas, usuários e permissões de acess
 O projeto utiliza uma arquitetura REST, separação por módulos e regras de negócio
 aplicadas no backend.
 
-## Atualização: catálogo e reposição
+## Atualização: venda rápida, permissões e listas paginadas
 
-Esta versão acrescenta edição e ativação/desativação de produtos, além de um plano de reposição. Não altera `schema.prisma`, migrations, dados existentes ou `.env`.
+Esta versão inclui o catálogo e a reposição da versão anterior e adiciona busca por código, sessão com permissões atuais, listas paginadas e históricos por produto.
 
-Para atualizar uma instalação já configurada, pare o servidor, selecione a branch `feat/catalog-inventory` e execute:
+Para atualizar uma instalação configurada, pare o backend e execute:
 
 ```bash
 git fetch origin
-git switch feat/catalog-inventory
-git pull --ff-only origin feat/catalog-inventory
+git switch feat/sales-workspace
+git pull --ff-only origin feat/sales-workspace
 npm ci
 npm run prisma:generate
+npx prisma migrate deploy
 npm run dev
 ```
 
-Não é necessário rodar seed, reset ou migrations para esta atualização. Use Node.js 24 para executar a suíte de testes atual.
+Mantenha o `.env` e o PostgreSQL existentes. A migration `20260929095000_add_product_barcode` adiciona apenas a coluna opcional `products.barcode` e seu índice único. Produtos existentes ficam com código nulo; nenhum saldo ou histórico é apagado. Faça o backup habitual antes da alteração de estrutura. Não execute reset ou seed. Se sua instalação foi criada com `db push` e não possui histórico de migrations, faça o baseline das migrations já aplicadas antes do deploy; não use reset para contornar o erro. Use Node.js 24 para a suíte atual.
+
+### Contratos da venda rápida e das listas
+
+- `GET /api/auth/me`: sessão autenticada, nome da função e permissões atuais; sem hash de senha. Usuário inativo retorna 401.
+- `GET /api/sales/catalog?page=1&limit=20&q=termo`: exige `sales:create`, retorna somente produtos ativos e dados de venda, sem custo.
+- `GET /api/sales/lookup?code=00123`: exige `sales:create`, pesquisa exata por SKU ou código de barras mantendo zeros à esquerda. 404 para inexistente/inativo; 409 quando o código coincide com SKU de outro produto.
+- `GET /api/products/:id`: exige `products:read`; inclui categoria e permite consultar produto inativo.
+- `GET /api/products/:id/history/:kind`: `kind` é `movements`, `sales` ou `purchases`; exige `products:read` e respectivamente `stock:read`, `sales:read` ou `purchases:read`. Paginação por padrão. Valores dos itens são históricos; compras incluem seu status atual.
+- `barcode` é texto opcional, único quando preenchido, com até 80 caracteres. String vazia vira `null`. Duplicidade retorna 409. É aceito na criação e edição de produto.
+
+As listas de produtos, categorias, fornecedores, usuários, funções, vendas, compras e movimentações aceitam paginação quando `page` ou `limit` está presente. Sem esses parâmetros, preservam o contrato legado para seletores existentes. Parâmetros: `page` (padrão 1), `limit` (padrão 20, máximo 100), `q` (até 100 caracteres), `from` e `to` (`AAAA-MM-DD`, inclusivos em UTC−03). Datas inválidas ou período invertido retornam 400. O período usa a data de criação; no histórico de itens usa a data da venda/pedido. Produtos também aceitam `status=active|inactive|all`, `categoryId` e `stock=all|low|out`.
+
+Resposta paginada:
+
+```json
+{ "status": "success", "data": { "items": [], "pagination": { "page": 1, "pageSize": 20, "total": 0, "totalPages": 1 } } }
+```
+
+Busca e contagem usam os mesmos filtros e uma transação de leitura `RepeatableRead`; ordenação inclui ID como desempate. Relatórios agregados preservam seus contratos anteriores. O cadastro não altera saldo: a venda continua validando preços e estoque no servidor. A API de venda não possui chave de idempotência; após falha de conexão na confirmação, consulte o histórico antes de repetir.
 
 ### Novos contratos
 

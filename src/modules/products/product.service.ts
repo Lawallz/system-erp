@@ -29,6 +29,7 @@ export class ProductService {
   async createProduct(
     data: {
       sku: string;
+      barcode?: string | null;
       name: string;
       description?: string;
       price: number;
@@ -58,6 +59,7 @@ export class ProductService {
     const product = await prisma.product.create({
       data: {
         sku: data.sku,
+        barcode: data.barcode,
         name: data.name,
         description: data.description,
         price: data.price,

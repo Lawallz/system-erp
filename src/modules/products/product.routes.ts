@@ -433,4 +433,11 @@ productRoutes.put('/:id', ensureAuthenticated, verifyPermission('products:update
 productRoutes.patch('/:id/activate', ensureAuthenticated, verifyPermission('products:update'), productController.activate.bind(productController));
 productRoutes.patch('/:id/deactivate', ensureAuthenticated, verifyPermission('products:delete'), productController.deactivate.bind(productController));
 
+productRoutes.get('/:id', ensureAuthenticated, verifyPermission('products:read'), productController.details.bind(productController));
+productRoutes.get('/:id/history/:kind', ensureAuthenticated, verifyPermission('products:read'), (req, res, next) => {
+  const permission = ({ sales: 'sales:read', purchases: 'purchases:read', movements: 'stock:read' } as Record<string, string>)[req.params.kind];
+  if (!permission) { res.status(400).json({ status: 'error', message: 'Histórico inválido' }); return; }
+  return verifyPermission(permission)(req, res, next);
+}, productController.history.bind(productController));
+
 export default productRoutes;

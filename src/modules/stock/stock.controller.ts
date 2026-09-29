@@ -1,3 +1,5 @@
+import { isPaged } from '../../shared/pagination.js';
+import { sendPage } from '../../shared/listing.js';
 import { Request, Response, NextFunction } from 'express';
 import { StockService } from './stock.service.js';
 
@@ -43,6 +45,7 @@ export class StockController {
     next: NextFunction
   ): Promise<void> {
     try {
+      if (isPaged(req)) { await sendPage(req, res, 'stock'); return; }
       const stockService = new StockService();
 
       const movements = await stockService.listMovements();

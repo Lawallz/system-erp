@@ -1,3 +1,6 @@
+import prisma from '../../config/prisma.js';
+import { z } from 'zod';
+import { sendPage } from '../../shared/listing.js';
 import { Router } from 'express';
 
 import { SalesController } from './sales.controller.js';
@@ -20,6 +23,23 @@ const salesController = new SalesController();
  */
 
 router.use(ensureAuthenticated);
+
+router.get('/lookup', verifyPermission('sales:create'), async (req, res, next) => {
+  try {
+    const code = z.string().trim().min(1).max(100).parse(req.query.code);
+    const products = await prisma.product.findMany({
+      where: { isActive: true, OR: [{ sku: code }, { barcode: code }] }, take: 2,
+      select: { id: true, name: true, sku: true, barcode: true, price: true, stockQuantity: true, isActive: true },
+    });
+    if (!products.length) { res.status(404).json({ status: 'error', message: 'Código não encontrado. Busque pelo nome ou confira o cadastro.' }); return; }
+    if (products.length > 1) { res.status(409).json({ status: 'error', message: 'Código ambíguo entre SKU e código de barras. Selecione o produto pela busca.' }); return; }
+    res.json({ status: 'success', data: products[0] });
+  } catch (error) { next(error); }
+});
+
+router.get('/catalog', verifyPermission('sales:create'), (req, res, next) => {
+  sendPage(req, res, 'saleCatalog').catch(next);
+});
 
 /**
  * @swagger

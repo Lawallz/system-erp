@@ -1,3 +1,5 @@
+import { isPaged } from '../../shared/pagination.js';
+import { sendPage } from '../../shared/listing.js';
 import { Request, Response, NextFunction } from 'express';
 import { RoleService } from './role.service.js';
 
@@ -41,6 +43,7 @@ export class RoleController {
     next: NextFunction
   ): Promise<void> {
     try {
+      if (isPaged(req)) { await sendPage(req, res, 'roles'); return; }
       const roles = await this.roleService.list();
 
       res.status(200).json({

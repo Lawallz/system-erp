@@ -1,3 +1,5 @@
+import { isPaged } from '../../shared/pagination.js';
+import { sendPage } from '../../shared/listing.js';
 import { Request, Response, NextFunction } from 'express';
 import { SalesService } from './sales.service.js';
 
@@ -33,6 +35,7 @@ export class SalesController {
 
   async list(req: Request, res: Response, next: NextFunction) {
     try {
+      if (isPaged(req)) { await sendPage(req, res, 'sales'); return; }
       const sales = await salesService.listSales();
 
       return res.status(200).json({

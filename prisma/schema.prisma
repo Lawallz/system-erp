@@ -72,6 +72,7 @@ model Category {
 model Product {
   id             String          @id @default(uuid())
   sku            String          @unique
+  barcode        String?         @unique
   name           String
   description    String?
   price          Decimal

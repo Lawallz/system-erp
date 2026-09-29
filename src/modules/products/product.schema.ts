@@ -11,6 +11,7 @@ export const createProductSchema = z.object({
   sku: z.string().trim().min(2, 'O SKU é obrigatório'),
   name: z.string().trim().min(2, 'O nome do produto é obrigatório'),
   description: z.string().optional(),
+  barcode: z.string().trim().max(80, 'Código muito longo').nullable().optional().transform(value => value === '' ? null : value),
   price: z.number().finite().positive('O preço deve ser maior que zero'),
   costPrice: z
     .number()

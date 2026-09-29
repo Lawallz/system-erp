@@ -1,3 +1,5 @@
+import { isPaged } from '../../shared/pagination.js';
+import { sendPage } from '../../shared/listing.js';
 import { Request, Response, NextFunction } from 'express';
 import { SupplierService } from './supplier.service.js';
 
@@ -33,6 +35,7 @@ export class SupplierController {
 
   async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      if (isPaged(req)) { await sendPage(req, res, 'suppliers'); return; }
       const suppliers = await this.supplierService.list();
 
       res.status(200).json({
