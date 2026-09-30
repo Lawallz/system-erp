@@ -6,23 +6,49 @@ controle de produtos, estoque, compras, vendas, usuários e permissões de acess
 O projeto utiliza uma arquitetura REST, separação por módulos e regras de negócio
 aplicadas no backend.
 
-## Atualização: venda rápida, permissões e listas paginadas
+## Atualização: custos, tributos informados e importações
 
-Esta versão inclui o catálogo e a reposição da versão anterior e adiciona busca por código, sessão com permissões atuais, listas paginadas e históricos por produto.
+Esta versão inclui as funcionalidades anteriores e acrescenta custos por compra, com versões estimadas e realizadas para compras nacionais, importação para revenda e encomendas internacionais.
 
 Para atualizar uma instalação configurada, pare o backend e execute:
 
 ```bash
 git fetch origin
-git switch feat/sales-workspace
-git pull --ff-only origin feat/sales-workspace
+git switch feat/import-costs
+git pull --ff-only origin feat/import-costs
 npm ci
 npm run prisma:generate
 npx prisma migrate deploy
 npm run dev
 ```
 
-Mantenha o `.env` e o PostgreSQL existentes. A migration `20260929095000_add_product_barcode` adiciona apenas a coluna opcional `products.barcode` e seu índice único. Produtos existentes ficam com código nulo; nenhum saldo ou histórico é apagado. Faça o backup habitual antes da alteração de estrutura. Não execute reset ou seed. Se sua instalação foi criada com `db push` e não possui histórico de migrations, faça o baseline das migrations já aplicadas antes do deploy; não use reset para contornar o erro. Use Node.js 24 para a suíte atual.
+Mantenha o `.env` e o PostgreSQL existentes. A nova migration `20260929163000_purchase_costings` cria uma tabela de revisões com índices e relações com compras/usuários. Ela não atualiza produtos, estoques ou compras existentes. Se ainda pendente, o deploy também aplica a migration anterior `20260929095000_add_product_barcode` (coluna opcional `products.barcode` e índice único). Produtos existentes ficam com código nulo; nenhum saldo ou histórico é apagado. Faça o backup habitual antes da alteração de estrutura. Não execute reset ou seed. Se sua instalação foi criada com `db push` e não possui histórico de migrations, faça o baseline das migrations já aplicadas antes do deploy; não use reset para contornar o erro. Use Node.js 24 para a suíte atual.
+
+### Custos e importações
+
+Abra uma compra e use **Custos, taxas e importação** no frontend `feat/import-costs`. Os itens da compra fornecem produtos e quantidades; o formulário começa com preços em BRL. Para uma importação, selecione a moeda e informe os preços unitários da invoice e o câmbio manual em BRL por unidade da moeda. A troca de moeda não converte os campos automaticamente. Despesas e bases de tributos são sempre informadas em BRL.
+
+- Tipos: `DOMESTIC`, `COMMERCIAL_IMPORT`, `INTERNATIONAL_PARCEL`. A classificação não determina alíquotas nem elegibilidade para regimes.
+- Etapas independentes: `ESTIMATE` e `ACTUAL`. Realizado exige referência de documentos; é uma declaração do operador, não confirmação bancária de pagamento.
+- Encargos: `TAX` ou `EXPENSE`; valor fixo ou percentual sobre uma base explícita. Por fora = base × taxa/100. Por dentro = base × (taxa/100) ÷ (1 − taxa/100). A base por dentro deve excluir o próprio tributo. Não há composição automática de bases, deduções, descontos ou regras por NCM/UF/regime.
+- Não duplique frete, seguro ou impostos já incorporados nos preços de origem. Tributos recuperáveis não são abatidos: este é um controle de desembolso gerencial, não custo contábil/fiscal.
+- O cálculo usa Decimal com precisão 40; valores convertidos por item e encargos são arredondados em centavos (half-up). O rateio é proporcional ao valor convertido dos produtos, pelo método dos maiores restos, com desempate pelo ID do item. A soma dos rateios sempre fecha com o total. Custos unitários são armazenados com 6 casas; a tela mostra 2 e o CSV mantém 6.
+- Margem bruta estimada usa o preço de venda do produto no momento do cálculo. Exclui tributos da venda, comissões, despesas operacionais e créditos fiscais. Não altera o custo cadastrado, preços, estoque ou total original da compra.
+- Cada salvamento é uma nova revisão imutável pela API, com entrada, resultado, versão do cálculo, autor e auditoria. Etapas têm sequências próprias. Os últimos 20 registros aparecem no histórico; revisões anteriores permanecem armazenadas e consultáveis por ID.
+- Mudanças nos itens da compra invalidam a assinatura do formulário; versões antigas são preservadas. A sequência esperada e uma transação serializável impedem sobrescrita concorrente. Em erro 409, recarregue e confira antes de salvar novamente.
+
+Endpoints (todos sob `/api/purchases/:purchaseId/costing`):
+
+| Método/caminho | Permissão | Resposta |
+| --- | --- | --- |
+| `GET /` | `purchases:read` | Compra, assinatura dos itens, última estimativa, último realizado e 20 revisões resumidas |
+| `POST /preview` | `purchases:read` | Cálculo sem persistência |
+| `POST /` | `purchases:read` + `purchases:create` | Nova revisão e auditoria na mesma transação |
+| `GET /revisions/:id` | `purchases:read` | Snapshot salvo pertencente à compra informada |
+
+O payload utiliza strings decimais com ponto, não números JSON: preços unitários e câmbio até 6 casas, valores e bases em BRL até 2. Máximo 200 itens e 60 encargos; custo total até R$ 999.999.999.999,99. `expectedRevision` vem da última versão da etapa (0 se inexistente); `purchaseFingerprint` vem de `GET /`. Campos extras, duplicatas, base/valores negativos, câmbio zero e gross-up de 100% são rejeitados.
+
+Referências para conferir o enquadramento fora do ERP: [Simulador oficial de importação](https://www4.receita.fazenda.gov.br/simulador/) e [manual da Receita para remessas](https://www.gov.br/receitafederal/pt-br/assuntos/aduana-e-comercio-exterior/manuais/remessas-postal-e-expressa/preciso-pagar-impostos-nas-compras-internacionais/quanto-pagarei-de-imposto). O sistema não importa alíquotas desses serviços e não oferece apuração fiscal ou emissão de NF-e.
 
 ### Contratos da venda rápida e das listas
 

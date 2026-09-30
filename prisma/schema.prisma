@@ -19,6 +19,7 @@ model User {
   auditLogs      AuditLog[]
   sales          Sale[]
   stockMovements StockMovement[]
+  purchaseCostings PurchaseCosting[]
   purchases      Purchase[]
   role           Role            @relation(fields: [roleId], references: [id])
 
@@ -173,6 +174,7 @@ model Supplier {
 }
 
 model Purchase {
+  costings    PurchaseCosting[]
   id          String         @id @default(uuid())
   supplierId  String         @map("supplier_id")
   userId      String         @map("user_id")
@@ -204,4 +206,25 @@ model PurchaseItem {
   @@index([purchaseId])
   @@index([productId])
   @@map("purchase_items")
+}
+
+
+// Immutable calculation snapshots. A new save creates a new revision per stage.
+model PurchaseCosting {
+  id          String   @id @default(uuid())
+  purchaseId  String   @map("purchase_id")
+  stage       String
+  revision    Int
+  reference   String
+  input       Json
+  output      Json
+  createdById String   @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  purchase    Purchase @relation(fields: [purchaseId], references: [id], onDelete: Restrict)
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@unique([purchaseId, stage, revision])
+  @@index([purchaseId, createdAt])
+  @@index([createdById])
+  @@map("purchase_costings")
 }
