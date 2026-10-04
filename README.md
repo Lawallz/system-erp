@@ -194,7 +194,7 @@ Exemplo de resposta de autorização negada:
   "status": "error",
   "message": "Acesso negado: permissão insuficiente"
 }
-````
+```
 
 HTTP Status:
 
@@ -346,17 +346,42 @@ POST   /api/purchases/:id/items
 PATCH  /api/purchases/:id/receive
 ```
 
-## Em desenvolvimento
+## Execução local
 
-* [ ] Relatórios de vendas
-* [ ] Relatórios de estoque
-* [ ] Curva ABC
-* [ ] Dashboard gerencial
-* [ ] Documentação OpenAPI / Swagger
+Com Node.js, npm e PostgreSQL disponíveis:
+
+```bash
+git clone https://github.com/Lawallz/system-erp.git
+cd system-erp
+npm ci
+```
+
+Copie `.env.example` para `.env` e configure `DATABASE_URL`, `JWT_SECRET` e `PORT`. No PowerShell, use `Copy-Item .env.example .env`; no Linux/macOS, `cp .env.example .env`.
+
+Prepare um banco local de desenvolvimento e execute:
+
+```bash
+npm run prisma:generate
+npm run prisma:migrate
+npm run dev
+```
+
+As migrações alteram o banco apontado por `DATABASE_URL`; confira o destino antes de executá-las. O seed está disponível em `npm run prisma:seed`; revise `prisma/seed.ts` antes de usá-lo para conhecer os dados iniciais.
+
+- Saúde da API: http://localhost:3333/health
+- Swagger: http://localhost:3333/api-docs
+- Interface web: [system-erp-web](https://github.com/Lawallz/system-erp-web)
+
+Se aparecer erro de tabela inexistente, confira se as migrações foram aplicadas ao mesmo banco usado pelo servidor.
+
+## Módulos e documentação já presentes
+
+O código inclui módulos de relatórios e dashboard, além da configuração do Swagger. Consulte a documentação interativa para verificar os endpoints disponíveis nesta versão. O frontend é mantido em repositório separado.
+
+## Próximos passos
+
 * [ ] Testes automatizados
 * [ ] Docker
-* [ ] Frontend React
-* [ ] Interface de gerenciamento
 
 ## Objetivo do projeto
 
