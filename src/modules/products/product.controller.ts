@@ -1,9 +1,39 @@
-import { Request, Response, NextFunction } from 'express';
-import { ProductService } from './product.service.js';
-import { createCategorySchema, createProductSchema } from './product.schema.js';
+import { Request, Response, NextFunction } from "express";
+import { ProductService } from "./product.service.js";
+import {
+  createCategorySchema,
+  createProductSchema,
+  updateProductSchema,
+  productQuerySchema,
+  productIdSchema,
+} from "./product.schema.js";
 
 export class ProductController {
-  async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async updateProduct(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const id = productIdSchema.parse(req.params.id);
+      const data = updateProductSchema.parse(req.body);
+      const product = await new ProductService().updateProduct(
+        id,
+        data,
+        req.user!.id,
+        req.ip,
+      );
+      res.json(product);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createCategory(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const data = createCategorySchema.parse(req.body);
       const productService = new ProductService();
@@ -15,7 +45,11 @@ export class ProductController {
     }
   }
 
-  async listCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async listCategories(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const productService = new ProductService();
       const categories = await productService.listCategories();
@@ -26,14 +60,22 @@ export class ProductController {
     }
   }
 
-  async createProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async createProduct(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const data = createProductSchema.parse(req.body);
-      const userId = req.user?.id || '';
+      const userId = req.user?.id || "";
       const ipAddress = req.ip;
 
       const productService = new ProductService();
-      const product = await productService.createProduct(data, userId, ipAddress);
+      const product = await productService.createProduct(
+        data,
+        userId,
+        ipAddress,
+      );
 
       res.status(201).json(product);
     } catch (error) {
@@ -41,10 +83,16 @@ export class ProductController {
     }
   }
 
-  async listProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async listProducts(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const productService = new ProductService();
-      const products = await productService.listProducts();
+      const products = await productService.listProducts(
+        productQuerySchema.parse(req.query),
+      );
 
       res.status(200).json(products);
     } catch (error) {

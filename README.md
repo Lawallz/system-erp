@@ -412,3 +412,24 @@ organização, segurança e regras de negócio em vez de apenas operações bás
 de CRUD.
 
 
+
+## Integração com o novo workspace
+
+Atualize o backend antes de iniciar a interface web atualizada. Não há alteração de schema ou nova migração nesta entrega.
+
+- `GET /api/auth/me`: retorna o usuário ativo e suas permissões atuais. O login também inclui `user.permissions`.
+- `GET /api/products?page=1&pageSize=12&search=cafe`: retorna `{ data, total, page, pageSize, totalPages }`. `pageSize` aceita de 1 a 100. Também há filtros `categoryId` e `sku` exato. Sem `page`, o retorno continua sendo um array, preservando clientes anteriores.
+- `PUT /api/products/:id`: atualiza os campos de cadastro, exige `products:update` e registra a alteração na auditoria. O saldo de estoque não é editado por esta rota.
+- `POST /api/sales` exige `sales:create`; `GET /api/sales` exige `sales:read`. A autorização é consultada no banco a cada operação.
+
+`JWT_SECRET` precisa estar configurado no servidor. O fallback genérico foi removido; o login falha com erro de configuração caso a variável esteja ausente. Não publique a conta de demonstração criada pelo seed sem alterar sua senha.
+
+### Teste de integração
+
+Prepare um **banco isolado para testes**, aplique as migrações e defina `ERP_TEST_DATABASE_URL` antes de executar:
+
+```bash
+npm run test:integration
+```
+
+O teste cria e remove seus próprios registros. Ele verifica permissões, sessão de usuário inativo, busca, paginação, edição auditada, venda, baixa de estoque, rollback por saldo insuficiente e revogação de permissões com token antigo. Sem a variável de teste, a suíte é marcada como ignorada. Nunca aponte essa variável para produção.

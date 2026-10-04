@@ -1,11 +1,11 @@
-import { Router } from 'express';
+import { Router } from "express";
 
-import { ProductController } from './product.controller.js';
+import { ProductController } from "./product.controller.js";
 
 import {
   ensureAuthenticated,
-  verifyPermission
-} from '../../middlewares/authMiddleware.js';
+  verifyPermission,
+} from "../../middlewares/authMiddleware.js";
 
 const productRoutes = Router();
 
@@ -67,10 +67,10 @@ const productController = new ProductController();
  *         $ref: '#/components/responses/Forbidden'
  */
 productRoutes.get(
-  '/categories',
+  "/categories",
   ensureAuthenticated,
-  verifyPermission('products:read'),
-  productController.listCategories.bind(productController)
+  verifyPermission("products:read"),
+  productController.listCategories.bind(productController),
 );
 
 /**
@@ -135,10 +135,10 @@ productRoutes.get(
  *         $ref: '#/components/responses/Forbidden'
  */
 productRoutes.post(
-  '/categories',
+  "/categories",
   ensureAuthenticated,
-  verifyPermission('products:create'),
-  productController.createCategory.bind(productController)
+  verifyPermission("products:create"),
+  productController.createCategory.bind(productController),
 );
 
 /**
@@ -221,10 +221,10 @@ productRoutes.post(
  *         $ref: '#/components/responses/Forbidden'
  */
 productRoutes.get(
-  '/',
+  "/",
   ensureAuthenticated,
-  verifyPermission('products:read'),
-  productController.listProducts.bind(productController)
+  verifyPermission("products:read"),
+  productController.listProducts.bind(productController),
 );
 
 /**
@@ -351,10 +351,17 @@ productRoutes.get(
  *         $ref: '#/components/responses/NotFound'
  */
 productRoutes.post(
-  '/',
+  "/",
   ensureAuthenticated,
-  verifyPermission('products:create'),
-  productController.createProduct.bind(productController)
+  verifyPermission("products:create"),
+  productController.createProduct.bind(productController),
+);
+
+productRoutes.put(
+  "/:id",
+  ensureAuthenticated,
+  verifyPermission("products:update"),
+  productController.updateProduct.bind(productController),
 );
 
 export default productRoutes;

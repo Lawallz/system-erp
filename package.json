@@ -1,7 +1,7 @@
 {
   "name": "mini-erp-backend",
   "version": "1.0.0",
-  "description": "Mini-ERP profissional para pequenos comércios",
+  "description": "Mini-ERP profissional para pequenos com\u00e9rcios",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:seed": "tsx prisma/seed.ts",
+    "test:integration": "node --import tsx --test tests/workspace.integration.test.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.10.2",
