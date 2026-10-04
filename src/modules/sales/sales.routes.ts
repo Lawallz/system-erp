@@ -1,12 +1,15 @@
-import { Router } from 'express';
+import { Router } from "express";
 
-import { SalesController } from './sales.controller.js';
+import { SalesController } from "./sales.controller.js";
 
-import { ensureAuthenticated } from '../../middlewares/authMiddleware.js';
+import {
+  ensureAuthenticated,
+  verifyPermission,
+} from "../../middlewares/authMiddleware.js";
 
-import { validateSchema } from '../../middlewares/validateSchema.js';
+import { validateSchema } from "../../middlewares/validateSchema.js";
 
-import { createSaleSchema } from './sales.schema.js';
+import { createSaleSchema } from "./sales.schema.js";
 
 const router = Router();
 
@@ -126,9 +129,10 @@ router.use(ensureAuthenticated);
  *         $ref: '#/components/responses/NotFound'
  */
 router.post(
-  '/',
+  "/",
+  verifyPermission("sales:create"),
   validateSchema(createSaleSchema),
-  salesController.create
+  salesController.create,
 );
 
 /**
@@ -219,9 +223,6 @@ router.post(
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  */
-router.get(
-  '/',
-  salesController.list
-);
+router.get("/", verifyPermission("sales:read"), salesController.list);
 
 export default router;

@@ -1,6 +1,7 @@
-import { Router } from 'express';
+import { ensureAuthenticated } from "../../middlewares/authMiddleware.js";
+import { Router } from "express";
 
-import { AuthController } from './auth.controller.js';
+import { AuthController } from "./auth.controller.js";
 
 const authRoutes = Router();
 
@@ -74,6 +75,12 @@ const authController = new AuthController();
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-authRoutes.post('/login', authController.login.bind(authController));
+authRoutes.post("/login", authController.login.bind(authController));
+
+authRoutes.get(
+  "/me",
+  ensureAuthenticated,
+  authController.me.bind(authController),
+);
 
 export default authRoutes;

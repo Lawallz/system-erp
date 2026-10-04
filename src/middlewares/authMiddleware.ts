@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { AppError } from '../errors/appError.js';
-import prisma from '../config/prisma.js';
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { AppError } from "../errors/appError.js";
+import prisma from "../config/prisma.js";
 
 interface TokenPayload {
   sub: string;
@@ -9,36 +9,47 @@ interface TokenPayload {
   exp: number;
 }
 
-export function ensureAuthenticated(req: Request, res: Response, next: NextFunction): void {
+export function ensureAuthenticated(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    throw new AppError('Token de autenticação não fornecido', 401);
+    throw new AppError("Token de autenticação não fornecido", 401);
   }
 
-  const [, token] = authHeader.split(' ');
+  const [, token] = authHeader.split(" ");
 
   try {
-    const secret = process.env.JWT_SECRET || 'default_secret';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new Error("JWT_SECRET não configurado");
     const decoded = jwt.verify(token, secret) as TokenPayload;
 
     req.user = {
       id: decoded.sub,
-      roleId: '',
+      roleId: "",
       permissions: [],
     };
 
     next();
   } catch {
-    throw new AppError('Token inválido ou expirado', 401);
+    throw new AppError("Token inválido ou expirado", 401);
   }
 }
 
 export function verifyPermission(requiredPermission: string) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       if (!req.user) {
-        res.status(401).json({ status: 'error', message: 'Usuário não autenticado' });
+        res
+          .status(401)
+          .json({ status: "error", message: "Usuário não autenticado" });
         return;
       }
 
@@ -58,12 +69,17 @@ export function verifyPermission(requiredPermission: string) {
       });
 
       if (!userWithPermissions || !userWithPermissions.isActive) {
-        res.status(401).json({ status: 'error', message: 'Usuário não encontrado ou inativo' });
+        res
+          .status(401)
+          .json({
+            status: "error",
+            message: "Usuário não encontrado ou inativo",
+          });
         return;
       }
 
       const permissions = userWithPermissions.role.rolePermissions.map(
-        (rp) => rp.permission.name
+        (rp) => rp.permission.name,
       );
 
       req.user.roleId = userWithPermissions.roleId;
@@ -72,7 +88,12 @@ export function verifyPermission(requiredPermission: string) {
       const hasPermission = permissions.includes(requiredPermission);
 
       if (!hasPermission) {
-        res.status(403).json({ status: 'error', message: 'Acesso negado: permissão insuficiente' });
+        res
+          .status(403)
+          .json({
+            status: "error",
+            message: "Acesso negado: permissão insuficiente",
+          });
         return;
       }
 

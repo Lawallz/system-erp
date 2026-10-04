@@ -1,9 +1,9 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import prisma from '../../config/prisma.js';
-import { AppError } from '../../errors/appError.js';
-import { loginSchema } from './auth.schema.js';
-import { z } from 'zod';
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import prisma from "../../config/prisma.js";
+import { AppError } from "../../errors/appError.js";
+import { loginSchema } from "./auth.schema.js";
+import { z } from "zod";
 
 type LoginInput = z.infer<typeof loginSchema>;
 
@@ -11,21 +11,27 @@ export class AuthService {
   async execute({ email, password }: LoginInput) {
     const user = await prisma.user.findUnique({
       where: { email },
-      include: { role: true },
+      include: {
+        role: {
+          include: { rolePermissions: { include: { permission: true } } },
+        },
+      },
     });
 
     if (!user || !user.isActive) {
-      throw new AppError('E-mail ou senha inválidos', 401);
+      throw new AppError("E-mail ou senha inválidos", 401);
     }
 
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
 
     if (!passwordMatch) {
-      throw new AppError('E-mail ou senha inválidos', 401);
+      throw new AppError("E-mail ou senha inválidos", 401);
     }
 
-    const secret = process.env.JWT_SECRET || 'default_secret';
-    const expiresIn = process.env.JWT_EXPIRES_IN || '1d';
+    const secret = process.env.JWT_SECRET;
+    if (!secret)
+      throw new AppError("Autenticação não configurada no servidor", 503);
+    const expiresIn = process.env.JWT_EXPIRES_IN || "1d";
 
     const token = jwt.sign({}, secret, {
       subject: user.id,
@@ -39,6 +45,7 @@ export class AuthService {
         name: user.name,
         email: user.email,
         role: user.role.name,
+        permissions: user.role.rolePermissions.map((rp) => rp.permission.name),
       },
     };
   }
